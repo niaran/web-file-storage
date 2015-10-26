@@ -54,9 +54,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
-    <Compile Include="Concrete\IdentityUserContext.cs" />
+    <Compile Include="Concrete\IdentityContext.cs" />
     <Compile Include="Concrete\UserStore.cs" />
     <Compile Include="Entities\IdentityUser.cs" />
+    <Compile Include="Entities\IdentityUserLogin.cs" />
+    <Compile Include="Entities\IdentityUserLoginGeneric.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

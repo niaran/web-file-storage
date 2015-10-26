@@ -8,9 +8,9 @@ using WebStorage.Domain.Entities;
 
 namespace WebStorage.Domain.Concrete
 {
-    class IdentityUserContext : DbContext 
+    class IdentityContext : DbContext 
     {
-        public IdentityUserContext() :base("DbConnection")
+        public IdentityContext() :base("DefaultConnection")
         { }
 
         public DbSet<IdentityUser> Users { get; set; }
