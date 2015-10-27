@@ -20,7 +20,6 @@ namespace WebStorage.Domain.Concrete
         IUserLoginStore<TUser>,
         IUserTwoFactorStore<TUser, String>,
         IUserLockoutStore<TUser, String>,
-        IUserLoginStore<TUser>,
         IUserStore<TUser>
         where TUser : IdentityUser
     {
@@ -28,7 +27,7 @@ namespace WebStorage.Domain.Concrete
         private List<TUser> _users;
         
         /// <summary>
-        /// Defaul ctor
+        /// Default ctor
         /// </summary>
         public UserStore()
         {
@@ -84,13 +83,135 @@ namespace WebStorage.Domain.Concrete
             TUser _user = _users.FirstOrDefault(o => o.Id == user.Id) as TUser;
             _user.PasswordHash = passwordHash;
             return Task.FromResult<Object>(null);
-        }
+        }          
 
         public Task UpdateAsync(TUser user)
         {
             TUser _user = _users.FirstOrDefault(o => o.Id == user.Id) as TUser;
             _user = user;
             return Task.FromResult<Object>(null);
+        }
+        #endregion
+
+        #region /////////////////////// IUserSecurityStampStore Impl ////////////////////////
+        public Task<string> GetSecurityStampAsync(TUser user)
+        {
+            return Task.FromResult(user.SecurityStamp);
+        }
+
+        public Task SetSecurityStampAsync(TUser user, string stamp)
+        {
+            user.SecurityStamp = stamp;
+            return Task.FromResult(0);
+        }
+        #endregion
+
+        #region ////////////////////////////// IUserEmailStore //////////////////////////////
+        /// <summary>
+        /// Set user email
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public Task SetEmailAsync(TUser user, string email)
+        {
+            TUser _user = _users.FirstOrDefault(o => o.Id == user.Id);
+            _user.Email = email;
+            UpdateAsync(_user);
+            return Task.FromResult(0);
+        }
+
+        /// <summary>
+        /// Get user email
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public Task<string> GetEmailAsync(TUser user)
+        {
+            return Task.FromResult<String>(user.Email);
+        }
+
+        /// <summary>
+        /// Get if user email is confirmed
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public Task<bool> GetEmailConfirmedAsync(TUser user)
+        {
+            return Task.FromResult<Boolean>(user.EmailConfirmed);
+        }
+
+        /// <summary>
+        /// Set when user email is confirmed
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="confirmed"></param>
+        /// <returns></returns>
+        public Task SetEmailConfirmedAsync(TUser user, bool confirmed)
+        {
+            user.EmailConfirmed = confirmed;
+            UpdateAsync(user);
+            return Task.FromResult(0);
+        }
+
+        /// <summary>
+        /// Find user by email
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public Task<TUser> FindByEmailAsync(string email)
+        {
+            TUser _user = _users.FirstOrDefault(o => o.Email == email);
+            return Task.FromResult<TUser>(_user);
+        }
+        #endregion
+
+        #region /////////////////////////// IUserPhoneNumberStore /////////////////////////// 
+        /// <summary>
+        /// Set user phone number
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="phoneNumber"></param>
+        /// <returns></returns>
+        public Task SetPhoneNumberAsync(TUser user, string phoneNumber)
+        {
+            TUser _user = _users.FirstOrDefault(o => o.Id == user.Id);
+            _user.PhoneNumber = phoneNumber;
+            UpdateAsync(_user);
+            return Task.FromResult(0);
+        }
+
+        /// <summary>
+        /// Get user phone number
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public Task<string> GetPhoneNumberAsync(TUser user)
+        {
+            return Task.FromResult<String>(user.PhoneNumber);
+        }
+
+        /// <summary>
+        /// Get if user phone number is confirmed
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public Task<bool> GetPhoneNumberConfirmedAsync(TUser user)
+        {
+            return Task.FromResult<Boolean>(user.PhoneNumberConfirmed);
+        }
+
+        /// <summary>
+        /// Set phone number if confirmed
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="confirmed"></param>
+        /// <returns></returns>
+        public Task SetPhoneNumberConfirmedAsync(TUser user, bool confirmed)
+        {
+            user.PhoneNumberConfirmed = confirmed;
+            UpdateAsync(user);
+            return Task.FromResult(0);
         }
         #endregion
     }
