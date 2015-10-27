@@ -25,7 +25,8 @@ namespace WebStorage.Domain.Concrete
     {
         private IdentityContext dbContext;
         private List<TUser> _users;
-        
+        private List<UserLogin> _userLogins;
+
         /// <summary>
         /// Default ctor
         /// </summary>
@@ -212,6 +213,64 @@ namespace WebStorage.Domain.Concrete
             user.PhoneNumberConfirmed = confirmed;
             UpdateAsync(user);
             return Task.FromResult(0);
+        }
+        #endregion
+
+        #region /////////////////////////// IUserLoginStore Impl ////////////////////////////
+        public Task AddLoginAsync(TUser user, UserLoginInfo login)
+        {
+            // проверить юзера и логин
+            _userLogins
+                .Add(
+                new UserLogin() {
+                    UserId = user.Id,
+                    LoginProvider = login.LoginProvider,
+                    ProviderKey = login.ProviderKey }
+                );
+
+            return Task.FromResult<object>(null);
+        }
+
+        public Task RemoveLoginAsync(TUser user, UserLoginInfo login)
+        {
+            _userLogins
+                .RemoveAll(o => (o.UserId == user.Id) && 
+                (o.LoginProvider == login.LoginProvider) && 
+                (o.ProviderKey == login.ProviderKey));
+            return Task.FromResult<object>(null);
+        }
+
+        public Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user)
+        {
+            List<UserLoginInfo> logins = (from ulinfo in _userLogins
+                                          where ulinfo.UserId == user.Id
+                                          select new UserLoginInfo(ulinfo.LoginProvider, ulinfo.ProviderKey)).ToList<UserLoginInfo>();
+            return Task.FromResult<IList<UserLoginInfo>>(logins);
+        }
+
+        public Task<TUser> FindAsync(UserLoginInfo login)
+        {
+            String userId = _userLogins
+                .FirstOrDefault(o => (o.LoginProvider == login.LoginProvider) && 
+                (o.ProviderKey == login.ProviderKey))
+                .UserId;
+            TUser _user = _users.FirstOrDefault(o => o.Id == userId);
+            return Task.FromResult<TUser>(_user);
+        }
+        #endregion
+
+        #region ///////////////////////// IUserTwoFactorStore Impl //////////////////////////
+        public Task SetTwoFactorEnabledAsync(TUser user, bool enabled)
+        {
+            TUser _user = _users.FirstOrDefault(o => o.Id == user.Id);
+            _user.TwoFactorEnabled = enabled;
+            UpdateAsync(_user);
+            return Task.FromResult(0);
+        }
+
+        public Task<bool> GetTwoFactorEnabledAsync(TUser user)
+        {
+            return Task.FromResult<Boolean>(user.TwoFactorEnabled);
         }
         #endregion
     }
