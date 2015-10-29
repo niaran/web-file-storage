@@ -34,78 +34,156 @@ namespace WebStorage.Domain.Concrete
         }
 
         #region ////////////////////////////// IUserStore Impl //////////////////////////////
+        /// <summary>
+        /// Add new user to data base
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         public Task CreateAsync(TUser user)
         {
-            dbContext.Users.Add(user);
-            dbContext.SaveChanges();
+            if (!(user == null))
+            {
+                dbContext.Users.Add(user);
+                dbContext.SaveChanges();
+            }            
             return Task.FromResult<object>(null);
         }
 
+        /// <summary>
+        /// Disable user, but dont delete
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         public Task DeleteAsync(TUser user)
         {
-            dbContext.Users.FirstOrDefault(o => o.Id == user.Id).IsDisabled = true;
-            dbContext.SaveChanges();
+            TUser _user = dbContext.Users.FirstOrDefault(o => o.Id == user.Id) as TUser;
+            if (_user != null)
+            {
+                _user.IsDisabled = true;
+                UpdateAsync(_user);
+            }            
             return Task.FromResult<object>(null);
         }
 
+        /// <summary>
+        /// Dispose 
+        /// </summary>
         public void Dispose()
         {
             dbContext.Dispose();
         }
 
+        /// <summary>
+        /// Find user by Id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public Task<TUser> FindByIdAsync(string userId)
         {
             TUser _user = dbContext.Users.FirstOrDefault(o => o.Id == userId) as TUser;
             return Task.FromResult<TUser>(_user);
         }
 
+        /// <summary>
+        /// Find user by name
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         public Task<TUser> FindByNameAsync(string userName)
         {
             TUser _user = dbContext.Users.FirstOrDefault(o => o.UserName == userName) as TUser;
             return Task.FromResult<TUser>(_user);
         }
 
+        /// <summary>
+        /// Get hashed user password
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         public Task<string> GetPasswordHashAsync(TUser user)
         {
             String passwordHash = dbContext.Users.FirstOrDefault(o => o.Id == user.Id).PasswordHash;
             return Task.FromResult<String>(passwordHash);
         }
 
+        /// <summary>
+        /// True if user has  hashed password.
+        /// Else false
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         public Task<bool> HasPasswordAsync(TUser user)
         {
-            Boolean hasPasswordHash = String.IsNullOrEmpty(dbContext.Users.FirstOrDefault(o => o.Id == user.Id).PasswordHash);
-            // добавить условие проверки
+            Boolean hasPasswordHash = !String.IsNullOrEmpty(dbContext.Users.FirstOrDefault(o => o.Id == user.Id).PasswordHash);
             return Task.FromResult<Boolean>(hasPasswordHash);
         }
 
+        /// <summary>
+        /// Set hashed password for user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="passwordHash"></param>
+        /// <returns></returns>
         public Task SetPasswordHashAsync(TUser user, string passwordHash)
         {
             TUser _user = dbContext.Users.FirstOrDefault(o => o.Id == user.Id) as TUser;
-            _user.PasswordHash = passwordHash;
-            dbContext.SaveChanges();
+            if (user != null)
+            {
+                _user.PasswordHash = passwordHash;
+                UpdateAsync(_user);
+            }            
             return Task.FromResult<Object>(null);
         }          
 
+        /// <summary>
+        /// Update 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         public Task UpdateAsync(TUser user)
         {
             TUser _user = dbContext.Users.FirstOrDefault(o => o.Id == user.Id) as TUser;
-            _user = user;
-            dbContext.SaveChanges();
+
+            if (_user != null)
+            {
+                _user = user;
+                dbContext.SaveChanges();
+            }            
             return Task.FromResult<Object>(null);
         }
         #endregion
 
         #region /////////////////////// IUserSecurityStampStore Impl ////////////////////////
+        /// <summary>
+        /// Get user security stamp
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         public Task<string> GetSecurityStampAsync(TUser user)
         {
-            return Task.FromResult(user.SecurityStamp);
+            if (user != null)
+            {
+                return Task.FromResult(user.SecurityStamp);
+            }            
+            return Task.FromResult<String>(null);
         }
 
+        /// <summary>
+        /// Set user security stamp
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="stamp"></param>
+        /// <returns></returns>
         public Task SetSecurityStampAsync(TUser user, string stamp)
         {
-            user.SecurityStamp = stamp;
-            dbContext.SaveChanges();
-            return Task.FromResult(0);
+            if ((user != null) && (!String.IsNullOrEmpty(stamp)))
+            {
+                user.SecurityStamp = stamp;
+                dbContext.SaveChanges();
+            }
+
+            return Task.FromResult<object>(null);
+            //return Task.FromResult(0);
         }
         #endregion
 
@@ -119,9 +197,13 @@ namespace WebStorage.Domain.Concrete
         public Task SetEmailAsync(TUser user, string email)
         {
             TUser _user = dbContext.Users.FirstOrDefault(o => o.Id == user.Id) as TUser;
-            _user.Email = email;
-            UpdateAsync(_user);
-            return Task.FromResult(0);
+            if (_user != null)
+            {
+                _user.Email = email;
+                UpdateAsync(_user);
+            }
+            return Task.FromResult<object>(null);
+            //return Task.FromResult(0);
         }
 
         /// <summary>
@@ -131,7 +213,11 @@ namespace WebStorage.Domain.Concrete
         /// <returns></returns>
         public Task<string> GetEmailAsync(TUser user)
         {
-            return Task.FromResult<String>(user.Email);
+            if (user != null)
+            {
+                return Task.FromResult<String>(user.Email);
+            }
+            return Task.FromResult<String>(null);
         }
 
         /// <summary>
@@ -141,7 +227,11 @@ namespace WebStorage.Domain.Concrete
         /// <returns></returns>
         public Task<bool> GetEmailConfirmedAsync(TUser user)
         {
-            return Task.FromResult<Boolean>(user.EmailConfirmed);
+            if (user != null)
+            {
+                return Task.FromResult<Boolean>(user.EmailConfirmed);
+            }
+            return Task.FromResult<Boolean>(false);
         }
 
         /// <summary>
@@ -152,9 +242,13 @@ namespace WebStorage.Domain.Concrete
         /// <returns></returns>
         public Task SetEmailConfirmedAsync(TUser user, bool confirmed)
         {
-            user.EmailConfirmed = confirmed;
-            UpdateAsync(user);
-            return Task.FromResult(0);
+            if (user != null)
+            {
+                user.EmailConfirmed = confirmed;
+                UpdateAsync(user);
+            }
+            return Task.FromResult<String>(null);
+            //return Task.FromResult(0);
         }
 
         /// <summary>
@@ -179,9 +273,13 @@ namespace WebStorage.Domain.Concrete
         public Task SetPhoneNumberAsync(TUser user, string phoneNumber)
         {
             TUser _user = dbContext.Users.FirstOrDefault(o => o.Id == user.Id) as TUser;
-            _user.PhoneNumber = phoneNumber;
-            UpdateAsync(_user);
-            return Task.FromResult(0);
+            if (_user != null)
+            {
+                _user.PhoneNumber = phoneNumber;
+                UpdateAsync(_user);
+            }
+            return Task.FromResult<Object>(null);
+            //return Task.FromResult(0);
         }
 
         /// <summary>
@@ -191,7 +289,11 @@ namespace WebStorage.Domain.Concrete
         /// <returns></returns>
         public Task<string> GetPhoneNumberAsync(TUser user)
         {
-            return Task.FromResult<String>(user.PhoneNumber);
+            if (user != null)
+            {
+                return Task.FromResult<String>(user.PhoneNumber);
+            }
+            return Task.FromResult<String>(null);
         }
 
         /// <summary>
@@ -201,7 +303,11 @@ namespace WebStorage.Domain.Concrete
         /// <returns></returns>
         public Task<bool> GetPhoneNumberConfirmedAsync(TUser user)
         {
-            return Task.FromResult<Boolean>(user.PhoneNumberConfirmed);
+            if (user != null)
+            {
+                return Task.FromResult<Boolean>(user.PhoneNumberConfirmed);
+            }
+            return Task.FromResult<Boolean>(false);
         }
 
         /// <summary>
@@ -212,44 +318,58 @@ namespace WebStorage.Domain.Concrete
         /// <returns></returns>
         public Task SetPhoneNumberConfirmedAsync(TUser user, bool confirmed)
         {
-            user.PhoneNumberConfirmed = confirmed;
-            UpdateAsync(user);
-            return Task.FromResult(0);
+            if (user != null)
+            {
+                user.PhoneNumberConfirmed = confirmed;
+                UpdateAsync(user);
+            }
+            return Task.FromResult<Object>(null);
+            //return Task.FromResult(0);
         }
         #endregion
 
         #region /////////////////////////// IUserLoginStore Impl ////////////////////////////
+        /// <summary>
+        /// Adds a login to the user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="login"></param>
+        /// <returns></returns>
         public Task AddLoginAsync(TUser user, UserLoginInfo login)
         {
-            // проверить юзера и логин
-            dbContext.UserLogins
-                .Add(
-                new UserLogin() {
-                    UserId = user.Id,
-                    LoginProvider = login.LoginProvider,
-                    ProviderKey = login.ProviderKey }
-                );
-
-            dbContext.SaveChanges();
-
+            if ((user != null) && (login != null))
+            {
+                TUser _user = dbContext.Users.FirstOrDefault(o => o.Id == user.Id) as TUser;
+                _user.Logins.Add(
+                    new UserLogin()
+                    {
+                        UserId = user.Id,
+                        LoginProvider = login.LoginProvider,
+                        ProviderKey = login.ProviderKey
+                    }
+                    );
+                UpdateAsync(_user);
+            }
             return Task.FromResult<object>(null);
         }
 
         /// <summary>
-        /// 
+        /// Remove login from user
         /// </summary>
         /// <param name="user"></param>
         /// <param name="login"></param>
         /// <returns></returns>
         public Task RemoveLoginAsync(TUser user, UserLoginInfo login)
         {
-            UserLogin usLgn = dbContext.UserLogins
-                .FirstOrDefault(o => (o.UserId == user.Id) &&
-                (o.LoginProvider == login.LoginProvider) &&
+            TUser _user = dbContext.Users.FirstOrDefault(o => o.Id == user.Id) as TUser;
+            if ((user != null) && (login != null))
+            {
+                UserLogin usrLgn = _user.Logins
+                .FirstOrDefault(o => (o.LoginProvider == login.LoginProvider) &&
                 (o.ProviderKey == login.ProviderKey));
-
-            dbContext.UserLogins.Remove(usLgn);
-            dbContext.SaveChanges();
+                _user.Logins.Remove(usrLgn);
+                UpdateAsync(_user);
+            }            
             return Task.FromResult<object>(null);
         }
 
@@ -260,10 +380,15 @@ namespace WebStorage.Domain.Concrete
         /// <returns></returns>
         public Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user)
         {
-            List<UserLoginInfo> logins = (from ulinfo in dbContext.UserLogins
-                                          where ulinfo.UserId == user.Id
-                                          select new UserLoginInfo(ulinfo.LoginProvider, ulinfo.ProviderKey)).ToList<UserLoginInfo>();
-            return Task.FromResult<IList<UserLoginInfo>>(logins);
+            TUser _user = dbContext.Users.FirstOrDefault(o => o.Id == user.Id) as TUser;
+            if (_user != null)
+            {
+                List<UserLoginInfo> logins = (from info in _user.Logins
+                                              select new UserLoginInfo(info.LoginProvider, info.ProviderKey))
+                                              .ToList<UserLoginInfo>();
+                return Task.FromResult<IList<UserLoginInfo>>(logins);
+            }
+            return Task.FromResult<IList<UserLoginInfo>>(null);
         }
 
         /// <summary>
@@ -273,11 +398,15 @@ namespace WebStorage.Domain.Concrete
         /// <returns></returns>
         public Task<TUser> FindAsync(UserLoginInfo login)
         {
-            String userId = dbContext.UserLogins
-                .FirstOrDefault(o => (o.LoginProvider == login.LoginProvider) && 
-                (o.ProviderKey == login.ProviderKey))
-                .UserId;
-            TUser _user = dbContext.Users.FirstOrDefault(o => o.Id == userId) as TUser;
+            TUser _user = null;
+            if (login != null)
+            {
+                _user = (from user in dbContext.Users
+                         from _login in user.Logins
+                         where (_login.ProviderKey == login.ProviderKey) && (_login.LoginProvider == login.LoginProvider)
+                         select user).FirstOrDefault() as TUser;
+                return Task.FromResult<TUser>(_user);
+            }
             return Task.FromResult<TUser>(_user);
         }
         #endregion
@@ -291,10 +420,14 @@ namespace WebStorage.Domain.Concrete
         /// <returns></returns>
         public Task SetTwoFactorEnabledAsync(TUser user, bool enabled)
         {
-            TUser _user = dbContext.UserLogins.FirstOrDefault(o => o.UserId == user.Id) as TUser;
-            _user.TwoFactorEnabled = enabled;
-            UpdateAsync(_user);
-            return Task.FromResult(0);
+            if (user != null)
+            {
+                TUser _user = dbContext.Users.FirstOrDefault(o => o.Id == user.Id) as TUser;
+                _user.TwoFactorEnabled = enabled;
+                UpdateAsync(_user);
+            }
+            return Task.FromResult<object>(null);
+           // return Task.FromResult(0);
         }
 
         /// <summary>
@@ -305,7 +438,11 @@ namespace WebStorage.Domain.Concrete
         /// <returns></returns>
         public Task<bool> GetTwoFactorEnabledAsync(TUser user)
         {
-            return Task.FromResult<Boolean>(user.TwoFactorEnabled);
+            if (user != null)
+            {
+                return Task.FromResult<Boolean>(user.TwoFactorEnabled);
+            }
+            return Task.FromResult<Boolean>(false);
         }
         #endregion
 
@@ -330,9 +467,13 @@ namespace WebStorage.Domain.Concrete
         /// <returns></returns>
         public Task SetLockoutEndDateAsync(TUser user, DateTimeOffset lockoutEnd)
         {
-            user.LockoutEndDateUtc = lockoutEnd.UtcDateTime;
-            UpdateAsync(user);
-            return Task.FromResult(0);
+            if (user != null)
+            {
+                user.LockoutEndDateUtc = lockoutEnd.UtcDateTime;
+                UpdateAsync(user);
+            }
+            return Task.FromResult<object>(null);
+            //return Task.FromResult(0);
         }
 
         /// <summary>
@@ -342,9 +483,13 @@ namespace WebStorage.Domain.Concrete
         /// <returns></returns>
         public Task<int> IncrementAccessFailedCountAsync(TUser user)
         {
-            user.AccessFailedCount++;
-            UpdateAsync(user);
-            return Task.FromResult(user.AccessFailedCount);
+            if (user != null)
+            {
+                user.AccessFailedCount++;
+                UpdateAsync(user);
+                return Task.FromResult(user.AccessFailedCount);
+            }
+            return Task.FromResult<Int32>(0);
         }
 
         /// <summary>
@@ -354,8 +499,11 @@ namespace WebStorage.Domain.Concrete
         /// <returns></returns>
         public Task ResetAccessFailedCountAsync(TUser user)
         {
-            user.AccessFailedCount = 0;
-            UpdateAsync(user);
+            if (user != null)
+            {
+                user.AccessFailedCount = 0;
+                UpdateAsync(user);
+            }            
             return Task.FromResult(0);
         }
 
@@ -366,7 +514,11 @@ namespace WebStorage.Domain.Concrete
         /// <returns></returns>
         public Task<int> GetAccessFailedCountAsync(TUser user)
         {
-            return Task.FromResult<Int32>(user.AccessFailedCount);
+            if (user != null)
+            {
+                return Task.FromResult<Int32>(user.AccessFailedCount);
+            }
+            return Task.FromResult<Int32>(0);
         }
 
         /// <summary>
@@ -376,7 +528,11 @@ namespace WebStorage.Domain.Concrete
         /// <returns></returns>
         public Task<bool> GetLockoutEnabledAsync(TUser user)
         {
-            return Task.FromResult<Boolean>(user.LockoutEnabled);
+            if (user != null)
+            {
+                return Task.FromResult<Boolean>(user.LockoutEnabled);
+            }
+            return Task.FromResult<Boolean>(false);
         }
 
         /// <summary>
@@ -387,9 +543,13 @@ namespace WebStorage.Domain.Concrete
         /// <returns></returns>
         public Task SetLockoutEnabledAsync(TUser user, bool enabled)
         {
-            user.LockoutEnabled = enabled;
-            UpdateAsync(user);
-            return Task.FromResult(0);
+            if (user != null)
+            {
+                user.LockoutEnabled = enabled;
+                UpdateAsync(user);
+            }
+            return Task.FromResult<Object>(null);
+            //return Task.FromResult(0);
         }
         #endregion
     }

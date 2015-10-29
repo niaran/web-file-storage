@@ -7,38 +7,43 @@ using Microsoft.AspNet.Identity;
 
 namespace WebStorage.Domain.Entities
 {
-    class IdentityUser : IUser
+    class IdentityUser : IUser<String>
     {
 
-       /* #region ///////////////////// Ctors /////////////////////
-        /// <summary>
-        /// Default ctor
-        /// </summary>
-        public IdentityUser()
-        {
-            Id = Guid.NewGuid().ToString();
-        }
+         #region ///////////////////// Ctors /////////////////////
+         /// <summary>
+         /// Default ctor
+         /// </summary>
+         public IdentityUser()
+         {
+             Id = Guid.NewGuid().ToString();
+         }
 
-        /// <summary>
-        /// Ctor that takes user name as argument
-        /// </summary>
-        /// <param name="userName"></param>
-        public IdentityUser(String userName) : this()
-        {
-            UserName = userName;
-        }
-        #endregion*/
+         /// <summary>
+         /// Ctor that takes user name as argument
+         /// </summary>
+         /// <param name="userName"></param>
+         public IdentityUser(String userName) : this()
+         {
+             UserName = userName;
+         }
+         #endregion
 
         #region ///////////////////// Properties /////////////////////
         /// <summary>
         /// User ID
         /// </summary>
-        public String Id { get; } = Guid.NewGuid().ToString();
+        public String Id { get; }// = Guid.NewGuid().ToString();
 
         /// <summary>
         /// User Name
         /// </summary>
         public String UserName { get; set; }
+
+        /// <summary>
+        /// Gets the collection of logins for the user
+        /// </summary>
+        public virtual ICollection<UserLogin> Logins { get; private set; }
 
         /// <summary>
         /// User Email

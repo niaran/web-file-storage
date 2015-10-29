@@ -14,6 +14,6 @@ namespace WebStorage.Domain.Concrete
         { }
 
         public DbSet<IdentityUser> Users { get; set; }
-        public DbSet<UserLogin> UserLogins { get; set; }
+        //public DbSet<UserLogin> UserLogins { get; set; }
     }
 }
