@@ -18,12 +18,15 @@ namespace WebStorage.Domain.Entities
 
         [Required]
         public DateTime Uploaded { get; set; }
+                
+        [Required]        
+        public String OwnerId { get; set; }
+        //public String OwnerId { get; set; }
 
         [Required]
-        public String OwnerId { get; set; }
         [ForeignKey("OwnerId")]
-        [Required]
-        public virtual InnerUser Owner { get; set; }
+        //public virtual InnerUser Owner { get; set; }
+        public virtual AppUser Owner { get; set; }
 
         [Required]
         public string Path { get; set; }

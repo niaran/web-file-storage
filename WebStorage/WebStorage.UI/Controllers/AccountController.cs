@@ -36,6 +36,7 @@ namespace WebStorage.UI.Controllers
             if (ModelState.IsValid)
             {
                 AppUser _user = await UserManager.FindAsync(details.Name, details.Password);
+
                 if (_user == null)
                 {
                     ModelState.AddModelError("", "Invalid name or password.");

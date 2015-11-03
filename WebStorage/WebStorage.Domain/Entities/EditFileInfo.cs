@@ -24,9 +24,9 @@ namespace WebStorage.Domain.Entities
         public virtual SystemFile EditedFile { get; set; }
 
         [Required]
-        public int UserId { get; set; }
+        public String UserId { get; set; }
         [Required]
         [ForeignKey("UserId")]
-        public virtual InnerUser UserEdited { get; set; }
+        public virtual AppUser UserEdited { get; set; }
     }
 }

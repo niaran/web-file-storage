@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace WebStorage.Domain.Abstract
 {
-    class Class1
+    interface IFileManager
     {
+
     }
 }

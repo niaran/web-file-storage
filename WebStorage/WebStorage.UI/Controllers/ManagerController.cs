@@ -25,7 +25,7 @@ namespace WebStorage.UI.Controllers
             return View(UserManager.Users);
         }
 
-        public AppUserManager UserManager
+        private AppUserManager UserManager
         {
             get
             {
@@ -48,6 +48,12 @@ namespace WebStorage.UI.Controllers
                 IdentityResult _result = await UserManager.CreateAsync(_user, user.Password);
                 if (_result.Succeeded)
                 {
+                    _user.CreateMainFolder();
+                    IdentityResult _res = await UserManager.UpdateAsync(_user);
+                    if (!_res.Succeeded)
+                    {
+                        return View(user);
+                    }
                     return RedirectToAction("Index");
                 }
                 else

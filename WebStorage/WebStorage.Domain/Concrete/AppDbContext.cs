@@ -9,8 +9,7 @@ namespace WebStorage.Domain.Concrete
         public AppDbContext() : base("IdentityDb")
         { }
 
-        DbSet<InnerUser> InnerUsers { get; set; }
-        DbSet<EditFileInfo> EditFileInfo { get; set; }
+        DbSet<EditFileInfo> EditFileInfoes { get; set; }
         DbSet<SystemFile> SystemFiles { get; set; }
         
         static AppDbContext()
@@ -22,10 +21,25 @@ namespace WebStorage.Domain.Concrete
         {
             return new AppDbContext();
         }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SystemFile>()
+                .HasRequired(o => o.Owner)
+                .WithMany()
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<EditFileInfo>()
+                .HasRequired(o => o.UserEdited)
+                .WithMany()
+                .WillCascadeOnDelete(false);
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 
     // Класс, кот можно использовать для разнообразных настроек 
-    public class IdentityDbInit : DropCreateDatabaseIfModelChanges<AppDbContext> // DropCreateDatabaseAlways
+    public class IdentityDbInit :  DropCreateDatabaseAlways<AppDbContext>//DropCreateDatabaseIfModelChanges<AppDbContext> 
     {
         protected override void Seed(AppDbContext context)
         {

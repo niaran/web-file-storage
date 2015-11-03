@@ -89,12 +89,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Abstract\Class1.cs" />
+    <Compile Include="Abstract\IFileManager.cs" />
     <Compile Include="Concrete\AppDbContext.cs" />
     <Compile Include="Entities\AppUser.cs" />
     <Compile Include="Entities\AppUserManager.cs" />
     <Compile Include="Entities\EditFileInfo.cs" />
-    <Compile Include="Entities\InnerUser.cs" />
+    <Compile Include="Entities\FileManager.cs" />
     <Compile Include="Entities\SystemFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
