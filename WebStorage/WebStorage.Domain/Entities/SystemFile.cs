@@ -23,7 +23,6 @@ namespace WebStorage.Domain.Entities
         public String OwnerId { get; set; }
         //public String OwnerId { get; set; }
 
-        [Required]
         [ForeignKey("OwnerId")]
         //public virtual InnerUser Owner { get; set; }
         public virtual AppUser Owner { get; set; }
