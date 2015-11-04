@@ -9,8 +9,8 @@ namespace WebStorage.Domain.Concrete
         public AppDbContext() : base("IdentityDb")
         { }
 
-        DbSet<EditFileInfo> EditFileInfoes { get; set; }
-        DbSet<SystemFile> SystemFiles { get; set; }
+        public DbSet<EditFileInfo> EditFileInfoes { get; set; }
+        public DbSet<SystemFile> SystemFiles { get; set; }
         
         static AppDbContext()
         {
