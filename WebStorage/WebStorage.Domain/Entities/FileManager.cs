@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using WebStorage.Domain.Abstract;
 using Microsoft.Owin;
 using WebStorage.Domain.Concrete;
+using System.IO;
 
 namespace WebStorage.Domain.Entities
 {
