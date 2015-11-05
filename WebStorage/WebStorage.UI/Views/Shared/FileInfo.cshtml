@@ -1,0 +1,33 @@
+﻿@model WebStorage.Domain.Entities.SystemFile
+
+<div class="file" ,
+     @if (!Model.IsFile) { <text>
+     onclick="window.location.href = '@Url.Action("Index", "File", new { folderId = Model.Id })'"
+     </text>  }>
+    @{
+        string imgPath = "";
+        if (Model.IsFile)
+        {
+            imgPath = Server.MapPath("~/Content/FileImg/" +  Model.Format + ".jpg");
+            if (!File.Exists(imgPath))
+            {
+                imgPath = "/Content/FileImg/default.png";
+            }
+        }
+        else
+        {
+            imgPath = "/Content/FileImg/folder.png";
+        }
+
+
+        <div style="float:left">
+            <img width="75" height="75" src="@imgPath" />
+        </div>
+    }
+
+    <h3>@Model.Name @if(Model.IsFile) {<text>.@Model.Format</text>}</h3>
+    <div style=" clear:both"></div>
+    <p>Created:@Model.Uploaded</p>
+    <p>Size:@Model.Size</p>
+</div>
+

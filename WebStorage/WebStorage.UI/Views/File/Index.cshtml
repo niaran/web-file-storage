@@ -1,0 +1,23 @@
+﻿@model IEnumerable<WebStorage.Domain.Entities.SystemFile>
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+</head>
+<body>
+    
+    @if(ViewBag.Folder != null)
+    {
+        <text><h1>@ViewBag.Folder.Name</h1></text>
+            @Html.ActionLink("Up", "Index", new { folderId = ViewBag.Folder.ParentId })
+    }
+    
+
+    @foreach (var file in Model)
+    {
+        Html.RenderPartial("FileInfo", file);
+    }
+</body>
+</html>

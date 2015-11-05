@@ -39,7 +39,7 @@ namespace WebStorage.Domain.Concrete
     }
 
     // Класс, кот можно использовать для разнообразных настроек 
-    public class IdentityDbInit :  DropCreateDatabaseAlways<AppDbContext>//DropCreateDatabaseIfModelChanges<AppDbContext> 
+    public class IdentityDbInit :  DropCreateDatabaseIfModelChanges<AppDbContext> 
     {
         protected override void Seed(AppDbContext context)
         {
