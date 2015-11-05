@@ -1,0 +1,13 @@
+﻿
+@{
+    ViewBag.Title = "CreateFolder";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Создание папки</h2>
+@using (Html.BeginForm("CreateFolder", "File", FormMethod.Post))
+{
+    <input type="text" name="folderName" id="folderName" />
+    <input type="submit" value="Создать" />
+}
+

@@ -4,6 +4,8 @@ using Microsoft.Owin.Security.Cookies;
 using Owin;
 using WebStorage.Domain.Concrete;
 using WebStorage.Domain.Entities;
+using Microsoft.Owin.Security.OAuth;
+using Microsoft.Owin.Security.Google;
 
 
 namespace WebStorage.UI
@@ -21,6 +23,9 @@ namespace WebStorage.UI
                     LoginPath = new PathString("/Account/Login")
                 }
                 );
+
+            app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
+            app.UseGoogleAuthentication();
         }
     }
    

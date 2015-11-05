@@ -1,0 +1,21 @@
+﻿
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Загрузка файла</h2>
+@using (Html.BeginForm("Create", "File", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <p>
+        <input type="file" name="uploadedFile" id="uploadedFile" multiple />
+        <input type="submit" value="Загрузить" />
+    </p>
+}
+@using (Html.BeginForm("Create", "File", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <p>
+        <input type="file" name="uploadedFile" id="uploadedFile" webkitdirectory directory multiple />
+        <input type="submit" value="Загрузить" />
+    </p>
+}

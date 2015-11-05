@@ -3,12 +3,12 @@
 <div class="file" ,
      @if (!Model.IsFile) { <text>
      onclick="window.location.href = '@Url.Action("Index", "File", new { folderId = Model.Id })'"
-     </text>  }>
+     </text>   }>
     @{
         string imgPath = "";
         if (Model.IsFile)
         {
-            imgPath = Server.MapPath("~/Content/FileImg/" +  Model.Format + ".jpg");
+            imgPath = Server.MapPath("~/Content/FileImg/" + Model.Format + ".jpg");
             if (!File.Exists(imgPath))
             {
                 imgPath = "/Content/FileImg/default.png";
@@ -25,9 +25,9 @@
         </div>
     }
 
-    <h3>@Model.Name @if(Model.IsFile) {<text>.@Model.Format</text>}</h3>
+    <h3>@Model.Name @if (Model.IsFile)
+    {<text>.@Model.Format</text>}</h3>
     <div style=" clear:both"></div>
     <p>Created:@Model.Uploaded</p>
     <p>Size:@Model.Size</p>
 </div>
-

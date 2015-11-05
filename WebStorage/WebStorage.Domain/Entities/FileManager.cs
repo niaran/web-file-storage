@@ -192,7 +192,7 @@ namespace WebStorage.Domain.Entities
             return await DeleteSingleFile(file);
         }
 
-	public IQueryable<SystemFile> GetFolderContent(int? folderId)
+	    public IQueryable<SystemFile> GetFolderContent(int? folderId)
         {
             return dbContext.SystemFiles.Where(x => x.ParentId == folderId);
         }

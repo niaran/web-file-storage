@@ -1,7 +1,19 @@
 ﻿@model WebStorage.UI.Models.LoginModel
 
 @{ ViewBag.Title = "Login";}
+@{
+    var attrForName = new Dictionary<string, object>();
+    attrForName.Add("placeholder", "Please, enter your user name");
+    attrForName.Add("class", "form-control");
+    var attrForPass = new Dictionary<string, object>();
+    attrForPass.Add("placeholder", "Please, enter your password");
+    attrForPass.Add("class", "form-control");
+}
 <h2>Log In</h2>
+@if (TempData["loginmessage"] != null)
+{
+    <div class="alert alert-info">@TempData["loginmessage"]</div>
+}
 @Html.ValidationSummary()
 @using (Html.BeginForm())
 {
@@ -9,11 +21,20 @@
     <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
     <div class="form-group">
         <label>Name</label>
-        @Html.TextBoxFor(x => x.Name, new { @class = "form-control" })
+        @Html.TextBoxFor(x => x.Name, attrForName)
     </div>
     <div class="form-group">
         <label>Password</label>
-        @Html.PasswordFor(x => x.Password, new { @class = "form-control" })
+        @Html.PasswordFor(x => x.Password, attrForPass)        
     </div>
     <button class="btn btn-primary" type="submit">Log In</button>
+    @Html.ActionLink("Sign in", "Create", "Manager")
 }
+
+@using (Html.BeginForm("GoogleLogin", "Account"))
+{
+    <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
+        <button class="btn btn-primary" type="submit">Log In via Google</button>
+}
+    
+
