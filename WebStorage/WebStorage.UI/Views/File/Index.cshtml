@@ -15,7 +15,7 @@
     
         @if (ViewBag.Folder != null)
             {
-                < text >< h1 > @ViewBag.Folder.Name </ h1 ></ text >
+                <text><h1> @ViewBag.Folder.Name </h1></text>
         @Html.ActionLink("Up", "Index", new { folderId = ViewBag.Folder.ParentId })
             }
     
