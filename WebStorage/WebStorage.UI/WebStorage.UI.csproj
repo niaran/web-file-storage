@@ -188,6 +188,8 @@
     <Content Include="Views\Manager\Index.cshtml" />
     <Content Include="Views\Manager\Edit.cshtml" />
     <Content Include="Views\File\Create.cshtml" />
+    <Content Include="Views\File\CreateFolder.cshtml" />
+    <Content Include="Views\File\Delete.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
