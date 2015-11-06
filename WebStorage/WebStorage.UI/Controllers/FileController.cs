@@ -58,7 +58,7 @@ namespace WebStorage.UI.Controllers
                 {
                     continue;
                 }
-                var res = await _fileManeger.SaveSingleFile(new FileInfo(temp.FileName), user, null, temp.ContentLength);
+                var res = await _fileManeger.SaveSingleFile(new FileInfo(temp.FileName), user, ViewBag.Folder, temp.ContentLength);
                 temp.SaveAs(res);
             }
             return View();
@@ -81,7 +81,7 @@ namespace WebStorage.UI.Controllers
                 ModelState.AddModelError("", "User not found");
                 return View();
             }
-            string path = await _fileManeger.CreateFolder(folderName, user, null);
+            string path = await _fileManeger.CreateFolder(folderName, user, ViewBag.Folder);
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);

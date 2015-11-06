@@ -26,13 +26,12 @@ namespace WebStorage.Domain.Entities
         //Метод для вписания файла в БД и получения его физического пути, для дальнейшего использования
         public async Task<string> SaveSingleFile(FileInfo fileInfo, AppUser user, SystemFile ParentElement, decimal fileSize)
         {
-            //ParentElement = forTest();
             //Создаем путь.
             string path = String.Empty;
             //В случае, если корневой каталог, путь в корень папки юзера
             if (ParentElement == null)
             {
-                path = user.PathToMainFolder + "\\" + fileInfo.Name;
+                path = user.PathToMainFolder + "\\";
             }
             //В случае, если имеется родительский элемент
             else
@@ -40,7 +39,7 @@ namespace WebStorage.Domain.Entities
                 //Увелиениче размера папки, в момент добаления файла
                 ParentElement.Size = ParentElement.Size + fileSize;
 
-                path = ParentElement.Path + "\\" + fileInfo.Name;
+                path = ParentElement.Path + "\\";
             }
 
             //Создаем и заполняем обьект файла
@@ -50,6 +49,7 @@ namespace WebStorage.Domain.Entities
             sysFile.OwnerId = user.Id;
             sysFile.Path = path;
             sysFile.Size = fileSize;
+            sysFile.Sharing_Atribute = (int)ShareType.OwnerOnly; //первоначально файл не расшаренный, а только для юзера
             sysFile.Format = fileInfo.Extension;
             sysFile.IsFile = true;
 
@@ -58,30 +58,33 @@ namespace WebStorage.Domain.Entities
                 sysFile.ParentId = ParentElement.Id;
             }
 
-            //Сохраняем файл в БД
+            //Сохраняем файл в БД первоначально, дабы ему дался айдишник. 
             dbContext.SystemFiles.Add(sysFile);
             await dbContext.SaveChangesAsync();
 
+            //Меняем путь, теперь добавлем Id. И пересохраняем. 
+            sysFile.Path = sysFile.Path + sysFile.Id.ToString() + sysFile.Name;
+            await dbContext.SaveChangesAsync();
+
             //Возвращаем путь к нему, для заливки в файловую систему
-            return path;
+            return sysFile.Path;
         }
 
 
         public async Task<string> CreateFolder(string folderName, AppUser user, SystemFile ParentElement)
         {
             //Создаем путь.
-            ParentElement = forTest();
 
             string path = String.Empty;
             //В случае, если корневой каталог, путь в корень папки юзера
             if (ParentElement == null)
             {
-                path = user.PathToMainFolder + "\\" + folderName;
+                path = user.PathToMainFolder + "\\";
             }
             //В случае, если имеется родительский элемент
             else
             {
-                path = ParentElement.Path + "\\" + folderName;
+                path = ParentElement.Path + "\\";
             }
 
             //Создаем и заполняем обьект папки
@@ -91,6 +94,7 @@ namespace WebStorage.Domain.Entities
             sysFolder.OwnerId = user.Id;
             sysFolder.Path = path;
             sysFolder.Size = 0;
+            sysFolder.Sharing_Atribute = (int)ShareType.OwnerOnly; //первоначально папка не расшаренный, а только для юзера
             sysFolder.Format = "dir";
             sysFolder.IsFile = false;
 
@@ -99,23 +103,18 @@ namespace WebStorage.Domain.Entities
                 sysFolder.ParentId = ParentElement.Id;
             }
 
-            //Сохраняем папку в БД
+            //Сохраняем файл в БД первоначально, дабы ему дался айдишник. 
             dbContext.SystemFiles.Add(sysFolder);
             await dbContext.SaveChangesAsync();
 
+            //Меняем путь, теперь добавлем Id. И пересохраняем. 
+            sysFolder.Path = sysFolder.Path + sysFolder.Id.ToString() + sysFolder.Name;
+            await dbContext.SaveChangesAsync();
+
             //Возвращаем путь к папке, для заливки в файловую систему
-            return path;
+            return sysFolder.Path;
         }
 
-
-
-        public SystemFile forTest()
-        {
-            var result = (from s in dbContext.SystemFiles
-                          where s.IsFile == false
-                          select s).FirstOrDefault();
-            return result;
-        }
         //метод для поиска файла или папки по id. 
         public SystemFile GetFileById(int id)
         {
