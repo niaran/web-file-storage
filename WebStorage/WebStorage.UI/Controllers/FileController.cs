@@ -102,7 +102,7 @@ namespace WebStorage.UI.Controllers
             return View();
         }
 
-	[Authorize]
+        [Authorize]
         public ActionResult Index(int? folderId)
         {
             //Если папка не передана, то выведет корень - все папки, к которым имеет доступ текущий юзер
@@ -110,9 +110,21 @@ namespace WebStorage.UI.Controllers
             {
                 ViewBag.Folder = null;
                 return View(_fileManeger.dbContext.SystemFiles.Where(x => x.Owner.UserName == HttpContext.User.Identity.Name && x.ParentFolder == null));
-            } 
+            }
             ViewBag.Folder = _fileManeger.GetFile(folderId);
             return View(_fileManeger.GetFolderContent(folderId));
+        }
+
+        //Расшариваем файл только для чтения
+        [Authorize]
+        public async Task<ActionResult> ShareReadOnly(int id)
+        {
+            ViewBag.Result = "Не получилось расшарить";
+            if (await _fileManeger.Share((int)ShareType.ShareReadOnly, id) != String.Empty)
+            {
+                ViewBag.Result = "Расшарено успешно";
+            }
+            return View();
         }
 
     }

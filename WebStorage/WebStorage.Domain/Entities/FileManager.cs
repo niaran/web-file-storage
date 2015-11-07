@@ -201,5 +201,73 @@ namespace WebStorage.Domain.Entities
             return dbContext.SystemFiles.Where(x => x.Id == Id).FirstOrDefault();
         }
 
+
+        //Метод для генерирования уникальной строки для шаринга
+        public string GenerateRandomString()
+        {
+            StringBuilder builder = new StringBuilder();
+            Random random = new Random();
+            char ch;
+            for (int i = 0; i < 5; i++)
+            {
+                //Генерируем число являющееся латинским символом в юникоде
+                ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+                //Конструируем строку со случайно сгенерированными символами
+                builder.Append(ch);
+            }
+            return builder.ToString();
+        }
+        //Метод для шаринга отдельного файла
+        public async Task<bool> ChangeShareStateSingleFile(int shareState, SystemFile file)
+        {
+            try
+            {
+                file.Sharing_Atribute = shareState;
+                await dbContext.SaveChangesAsync();
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+        //Метод для шаринга обьекта системного файла (файла/папки)
+        public async Task<bool> ChangeShareStateSystemFile(int shareState, SystemFile sysFile)
+        {
+            //Если у нас просто файл, меняем его шаринг атрибут
+            if (sysFile.IsFile)
+            {
+                return await ChangeShareStateSingleFile(shareState, sysFile);
+            }
+
+            //если папка, находим все дочерние элементы
+            var list_of_files = from s in dbContext.SystemFiles
+                                where s.ParentId == sysFile.Id
+                                select s;
+            //меняем атрибут у всех детей-файлов
+            foreach (var item in list_of_files)
+            {
+                await ChangeShareStateSystemFile(shareState, item);
+            }
+            //меняем атрибут у самой папки
+            return await ChangeShareStateSingleFile(shareState, sysFile);
+        }
+
+
+        //метод для шаринга/аншаринга файла либо папки
+        public async Task<string> Share(int shareState, int sysFileId)
+        {
+            SystemFile sysFile = GetFileById(sysFileId);
+            if (sysFile == null)
+            {
+                return String.Empty;
+            }
+            await ChangeShareStateSystemFile(shareState, sysFile);
+            //генерируем уникальную ссылку для файла/папки
+            sysFile.Sharing_Id = GenerateRandomString() + sysFile.Id.ToString();
+            await dbContext.SaveChangesAsync();
+            return sysFile.Sharing_Id;
+        }
+
     }
 }

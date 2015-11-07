@@ -206,6 +206,7 @@
     <Content Include="Views\File\Delete.cshtml" />
     <Content Include="Views\File\Index.cshtml" />
     <Content Include="Views\Shared\FileInfo.cshtml" />
+    <Content Include="Views\File\ShareReadOnly.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
