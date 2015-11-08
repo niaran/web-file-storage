@@ -1,40 +1,60 @@
 ﻿@model WebStorage.UI.Models.LoginModel
+@using Microsoft.Owin.Security
 
 @{ ViewBag.Title = "Login";}
-@{
-    var attrForName = new Dictionary<string, object>();
-    attrForName.Add("placeholder", "Please, enter your user name");
-    attrForName.Add("class", "form-control");
-    var attrForPass = new Dictionary<string, object>();
-    attrForPass.Add("placeholder", "Please, enter your password");
-    attrForPass.Add("class", "form-control");
+
+@{ 
+    Dictionary<String, String> templForBtn = new Dictionary<string, string>()
+    {
+        ["github"]= "github",
+        ["twitter"] = "twitter",
+        ["facebook"] = "facebook",
+        ["linkedin"] = "linkedin"
+    };
 }
+
 <h2>Log In</h2>
+
 @if (TempData["loginmessage"] != null)
 {
     <div class="alert alert-info">@TempData["loginmessage"]</div>
 }
+
 @Html.ValidationSummary()
 @using (Html.BeginForm())
 {
-    @Html.AntiForgeryToken();
+    @Html.AntiForgeryToken()
     <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
     <div class="form-group">
         <label>Name</label>
-        @Html.TextBoxFor(x => x.Name, attrForName)
+        @Html.TextBoxFor(x => x.Name, new { @class = "form-control", placeholder = "Please, enter your user name" })
     </div>
     <div class="form-group">
         <label>Password</label>
-        @Html.PasswordFor(x => x.Password, attrForPass)        
+        @Html.PasswordFor(x => x.Password, new { @class= "form-control", placeholder = "Please, enter your password" })        
     </div>
-    <button class="btn btn-primary" type="submit">Log In</button>
+    <button class="btn btn-default" type="submit">Log In</button>
     @Html.ActionLink("Sign in", "Create", "Manager")
 }
 
-@using (Html.BeginForm("GoogleLogin", "Account"))
-{
-    <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
-        <button class="btn btn-primary" type="submit">Log In via Google</button>
+@{ 
+    var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+    foreach (var p in loginProviders)
+    {
+        
+        using (Html.BeginForm("ExtLogin", "Account"))
+        {
+            string templ = p.AuthenticationType.ToLowerInvariant();
+            if (templForBtn.ContainsKey(templ))
+            {
+                    <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
+                    <button class="btn btn-social-icon btn-@templForBtn[templ]" type="submit" name="provider" value="@p.AuthenticationType">
+                        <span class="fa fa-@templForBtn[templ]"></span>
+                    </button>
+            }
+        }
+    }
 }
-    
+
+
 

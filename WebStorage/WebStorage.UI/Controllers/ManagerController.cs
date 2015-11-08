@@ -40,6 +40,8 @@ namespace WebStorage.UI.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(UserViewModel user)
         {
             if (ModelState.IsValid)
@@ -54,7 +56,20 @@ namespace WebStorage.UI.Controllers
                     {
                         return View(user);
                     }
-                    return RedirectToAction("Index");
+                    AppUser User = await UserManager.FindAsync(user.Name, user.Password);
+                    // генерируем токен для подтверждения регистрации
+                    var code = await UserManager.GenerateEmailConfirmationTokenAsync(User.Id);
+                    // создаем ссылку для подтверждения
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = User.Id, code = code },
+                               protocol: Request.Url.Scheme);
+                    // отправка письма
+                    await UserManager.SendEmailAsync(User.Id, "Подтверждение электронной почты",
+                               "Для завершения регистрации перейдите по ссылке:: <a href=\""
+                                                               + callbackUrl + "\">завершить регистрацию</a>");
+
+                    return View("DisplayEmail");
+
+                    //return RedirectToAction("Index");
                 }
                 else
                 {

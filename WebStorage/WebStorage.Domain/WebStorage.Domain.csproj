@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="Abstract\IFileManager.cs" />
     <Compile Include="Concrete\AppDbContext.cs" />
+    <Compile Include="Entities\AppSignInManager.cs" />
     <Compile Include="Entities\AppUser.cs" />
     <Compile Include="Entities\AppUserManager.cs" />
     <Compile Include="Entities\EditFileInfo.cs" />

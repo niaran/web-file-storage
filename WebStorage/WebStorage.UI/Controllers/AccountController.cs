@@ -1,20 +1,15 @@
 ﻿using System;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin;
-using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security;
-using Owin;
 using WebStorage.Domain.Entities;
-using WebStorage.Domain.Concrete;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using WebStorage.UI.Models;
 using System.Web.Mvc;
+using System.Linq;
+using Facebook;
 
 namespace WebStorage.UI.Controllers
 {
@@ -27,6 +22,9 @@ namespace WebStorage.UI.Controllers
         // Инструмент работы с пользователями
         private AppUserManager UserManager
         { get { return HttpContext.GetOwinContext().GetUserManager<AppUserManager>(); } }
+        // Инструмент работы с авторизацией
+        private AppSignInManager SignInManager
+        { get { return HttpContext.GetOwinContext().Get<AppSignInManager>(); } }
 
         [AllowAnonymous]
         public ActionResult Login(String returnUrl)
@@ -38,7 +36,7 @@ namespace WebStorage.UI.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(LoginModel details, String returnUrl)
+        public async Task<ActionResult> Login(LoginModel details)
         {
             if (ModelState.IsValid)
             {
@@ -51,14 +49,8 @@ namespace WebStorage.UI.Controllers
                 }
                 else
                 {
-                    ClaimsIdentity ident = await UserManager.CreateIdentityAsync(_user,
-                        DefaultAuthenticationTypes.ApplicationCookie);
-                    AuthManager.SignOut();
-                    AuthManager.SignIn(new AuthenticationProperties()
-                    {
-                        IsPersistent = false
-                    }, ident);
-                    return Redirect(returnUrl);
+                    await SignInManager.SignInAsync(_user, isPersistent: false, rememberBrowser: true);
+                    return RedirectToAction("Index", "Home");
                 }                
             }
             return View(details);
@@ -66,59 +58,103 @@ namespace WebStorage.UI.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult GoogleLogin(string returnUrl)
+        public ActionResult ExtLogin(string provider)
         {
-            var properties = new AuthenticationProperties
-            {
-                RedirectUri = Url.Action("GoogleLoginCallback", new { returnUrl = returnUrl })
-            };
-            // перенаправляем пользователя на страницу авторизации Google
-            HttpContext.GetOwinContext().Authentication.Challenge(properties, "Google");
-            return new HttpUnauthorizedResult();
+            return new ChallengeResult(provider, Url.Action("ExtLoginCallback", 
+                "Account", new { loginProvider = provider}));
         }
 
-        public async Task<ActionResult> GoogleLoginCallback(string returnUrl)
+        [AllowAnonymous]
+        public async Task<ActionResult> ExtLoginCallback()
         {
-            ExternalLoginInfo loginInfo = await AuthManager.GetExternalLoginInfoAsync();
-            AppUser _user = await UserManager.FindAsync(loginInfo.Login);
-            if (_user == null)
-            {
-                _user = new AppUser
-                {
-                    UserName = loginInfo.DefaultUserName,
-                    Email = loginInfo.Email
-                };
 
-                IdentityResult _result = await UserManager.CreateAsync(_user);
-                if (!_result.Succeeded)
+            var loginInfo = await AuthManager.GetExternalLoginInfoAsync();
+            if (loginInfo == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            // Перенаправляем пользователя на страницу с которой он начал если у него есть аккаунт
+            var result = await SignInManager.ExternalSignInAsync(loginInfo, isPersistent: false);
+            switch (result)
+            {
+                case SignInStatus.Success:
+                    return RedirectToAction("Index", "Home");
+                /*case SignInStatus.LockedOut:
+                    return View("Lockout");
+                case SignInStatus.RequiresVerification:
+                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = false });*/
+                case SignInStatus.Failure:
+                default:
+                    // Если у пользователя нет аккаунта просим создать его
+                    ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
+                    return View("ExternalLoginConfirmation", new ExternalLoginViewModel { Email = loginInfo.Email });
+            }
+        }
+        
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginViewModel model)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Manager");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var info = await AuthManager.GetExternalLoginInfoAsync();
+                if (info == null)
                 {
-                    return View("Error", _result.Errors);
+                    return RedirectToAction("Login");
+                }
+                var user = new AppUser { UserName = model.Name, Email = model.Email };
+                var result = await UserManager.CreateAsync(user);
+                if (result.Succeeded)
+                {
+                    user.CreateMainFolder();
+                    await UserManager.UpdateAsync(user);
+                    result = await UserManager.AddLoginAsync(user.Id, info.Login);
+                    if (result.Succeeded)
+                    {
+                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
                 else
                 {
-                    _result = await UserManager.AddLoginAsync(_user.Id, loginInfo.Login);
-                    if (!_result.Succeeded)
-                    {
-                        return View("Error", _result.Errors);
-                    }
-                }
-            }
-
-            ClaimsIdentity identity = await UserManager.CreateIdentityAsync(_user, 
-                DefaultAuthenticationTypes.ApplicationCookie);
-            identity.AddClaims(loginInfo.ExternalIdentity.Claims);
-            AuthManager.SignIn(new AuthenticationProperties
-            {
-                IsPersistent = false
-            }, identity);
-            return Redirect(returnUrl ?? "/");
+                    ModelState.AddModelError("", "Try another user name or email.");
+                }                
+            }            
+            return View(model);
         }
 
         [Authorize]
         public ActionResult Logout()
         {
-            AuthManager.SignOut();
+            //AuthManager.SignOut();
+            SignInManager.AuthenticationManager.SignOut();
             return RedirectToAction("Index", "Home");
         }
+
+        #region HttpUnauthorizedResult helper
+        private class ChallengeResult : HttpUnauthorizedResult
+        {
+            public ChallengeResult(string provider, string redirectUrl)
+            {
+                LoginProvider = provider;
+                RedirectUrl = redirectUrl;
+            }
+
+            public string LoginProvider { get; set; }
+            public string RedirectUrl { get; set; }
+
+            public override void ExecuteResult(ControllerContext context)
+            {
+                context.HttpContext.GetOwinContext().Authentication.Challenge(new AuthenticationProperties { RedirectUri = RedirectUrl }, LoginProvider);
+            }
+        }
+        #endregion
     } 
 }

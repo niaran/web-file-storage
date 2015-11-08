@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.IO;
+using System.Security.Claims;
+using Microsoft.AspNet.Identity;
 
 namespace WebStorage.Domain.Entities
 {
@@ -37,6 +39,14 @@ namespace WebStorage.Domain.Entities
                 Directory.CreateDirectory(pathToAppUserDirectory);
                 PathToMainFolder = pathToAppUserDirectory;
             }                        
+        }
+
+        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<AppUser> manager)
+        {
+            // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
+            var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
+            // Add custom user claims here
+            return userIdentity;
         }
     }
 }
