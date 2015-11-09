@@ -28,6 +28,7 @@
                     <td>
                         @using (Html.BeginForm("Delete", "Manager", new { id = user.Id }))
                         {
+                            @Html.AntiForgeryToken()
                             @Html.ActionLink("Edit", "Edit", new { id = user.Id }, new { @class = "btn btn-primary btn-xs" })
                             <button class="btn btn-danger btn-xs" type="submit">
                                 Delete
@@ -39,5 +40,6 @@
         }
     </table>
 </div>
+@Html.AntiForgeryToken()
 @Html.ActionLink("Create", "Create", null, new { @class = "btn btn-primary" })
 

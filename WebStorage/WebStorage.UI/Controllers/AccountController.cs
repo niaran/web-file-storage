@@ -10,29 +10,70 @@ using WebStorage.UI.Models;
 using System.Web.Mvc;
 using System.Linq;
 using Facebook;
+using System.Data.Entity;
 
 namespace WebStorage.UI.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
-        // Инструмент работы с авторизацией
+        #region /////////////////////////////////// Properties ///////////////////////////////////
+        
         private IAuthenticationManager AuthManager
         { get { return HttpContext.GetOwinContext().Authentication; } }
-        // Инструмент работы с пользователями
+        
+        private AppUserManager _userManager;
         private AppUserManager UserManager
-        { get { return HttpContext.GetOwinContext().GetUserManager<AppUserManager>(); } }
-        // Инструмент работы с авторизацией
-        private AppSignInManager SignInManager
-        { get { return HttpContext.GetOwinContext().Get<AppSignInManager>(); } }
-
-        [AllowAnonymous]
-        public ActionResult Login(String returnUrl)
         {
-            ViewBag.returnUrl = returnUrl;
+            get { return _userManager ?? HttpContext.GetOwinContext().GetUserManager<AppUserManager>(); }
+            set { _userManager = value; }
+        }
+        
+        private AppSignInManager _signInManager;
+        private AppSignInManager SignInManager
+        {
+            get { return _signInManager ?? HttpContext.GetOwinContext().Get<AppSignInManager>(); }
+            set { _signInManager = value; }
+        }
+        #endregion
+
+        /// <summary>
+        /// Default ctor
+        /// </summary>
+        /// <param name="userManager"></param>
+        /// <param name="signInManager"></param>
+        public AccountController()
+        {
+            UserManager = null;
+            SignInManager = null;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userManager"></param>
+        /// <param name="signInManager"></param>
+        public AccountController(AppUserManager userManager, AppSignInManager signInManager)
+        {
+            UserManager = userManager;
+            SignInManager = signInManager;
+        }
+
+        #region ////////////////////////////////////// LogIn //////////////////////////////////////
+        /// <summary>
+        /// Login /Get/
+        /// </summary>
+        /// <returns></returns>
+        [AllowAnonymous]
+        public ActionResult Login()
+        {
             return View();
         }
 
+        /// <summary>
+        /// Login /Post/
+        /// </summary>
+        /// <param name="details"></param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -49,22 +90,40 @@ namespace WebStorage.UI.Controllers
                 }
                 else
                 {
-                    await SignInManager.SignInAsync(_user, isPersistent: false, rememberBrowser: true);
-                    return RedirectToAction("Index", "Home");
+                    SignInStatus result = await SignInManager.PasswordSignInAsync(details.Name, details.Password, details.remember, shouldLockout: false);
+                    if (result == SignInStatus.Success)
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    ModelState.AddModelError("", "You dont have access.");
                 }                
             }
             return View(details);
         }
+        #endregion
 
+        #region ////////////////////////////////// ExternalLogIn //////////////////////////////////
+        /// <summary>
+        /// ExtLogin
+        /// </summary>
+        /// <param name="provider"></param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult ExtLogin(string provider)
+        [ValidateAntiForgeryToken]
+        // Используем вспомогательный класс ChallengeResult
+        public ActionResult ExtLogin(String provider)
         {
             return new ChallengeResult(provider, Url.Action("ExtLoginCallback", 
                 "Account", new { loginProvider = provider}));
         }
 
+        /// <summary>
+        /// ExtLoginCallback
+        /// </summary>
+        /// <returns></returns>
         [AllowAnonymous]
+        // Ф-я обратного вызова для входа на сайт(когда пытаемся достучатся с пом соц сетей) 
         public async Task<ActionResult> ExtLoginCallback()
         {
 
@@ -72,45 +131,45 @@ namespace WebStorage.UI.Controllers
             if (loginInfo == null)
             {
                 return RedirectToAction("Login");
-            }
-
-            // Перенаправляем пользователя на страницу с которой он начал если у него есть аккаунт
+            }            
             var result = await SignInManager.ExternalSignInAsync(loginInfo, isPersistent: false);
             switch (result)
             {
                 case SignInStatus.Success:
+                    // Перенаправляем пользователя на стартовую страницу проекта если у него есть аккаунт
                     return RedirectToAction("Index", "Home");
-                /*case SignInStatus.LockedOut:
-                    return View("Lockout");
-                case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = false });*/
                 case SignInStatus.Failure:
                 default:
                     // Если у пользователя нет аккаунта просим создать его
                     ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-                    return View("ExternalLoginConfirmation", new ExternalLoginViewModel { Email = loginInfo.Email });
+                    return View("ExternalLoginConfirmation", new ExternalLoginViewModel { Email = loginInfo.Email, Name = loginInfo.DefaultUserName });
             }
         }
-        
+        /// <summary>
+        /// ExternalLoginConfirmation
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        /*
+        Некоторые соц сети(twitter) не дают информацию пользователя в виде его email.
+        У Facebook можно выудить это с помощью его API, но потом вылазит исключение связанное с @Html.AntiForgeryToken() в представлении.
+        Я нашел вариант исправить это, но не уверен, что оно будет обеспечивать безопасность приложения, поэтому будем просить пользователя
+        ввести почту и имя. Если будет возможность эту информацию будем вытягивать из  ExternalLoginInfo.Email и ExternalLoginInfo.DefaultUserName.
+        */
         public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginViewModel model)
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Index", "Manager");
-            }
-
             if (ModelState.IsValid)
             {
-                var info = await AuthManager.GetExternalLoginInfoAsync();
+                ExternalLoginInfo info = await AuthManager.GetExternalLoginInfoAsync();
                 if (info == null)
                 {
                     return RedirectToAction("Login");
                 }
-                var user = new AppUser { UserName = model.Name, Email = model.Email };
-                var result = await UserManager.CreateAsync(user);
+                AppUser user = new AppUser { UserName = model.Name, Email = model.Email };
+                IdentityResult result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
                     user.CreateMainFolder();
@@ -121,26 +180,42 @@ namespace WebStorage.UI.Controllers
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                         return RedirectToAction("Index", "Home");
                     }
+                    AddErrors(result);
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Try another user name or email.");
+                    AddErrors(result);
                 }                
             }            
             return View(model);
         }
+        #endregion
 
+        #region /////////////////////////////////// Logout(off) ///////////////////////////////////
+        /// <summary>
+        /// Logout
+        /// </summary>
+        /// <returns></returns>
         [Authorize]
         public ActionResult Logout()
         {
-            //AuthManager.SignOut();
-            SignInManager.AuthenticationManager.SignOut();
+            //SignInManager.AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie); // или
+            AuthManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             return RedirectToAction("Index", "Home");
         }
-
-        #region HttpUnauthorizedResult helper
+        #endregion
+        
+        #region/////////////////////////// HttpUnauthorizedResult helper //////////////////////////
+        /// <summary>
+        /// Вспомогательный класс для реализации авторизации с помощью провайдеров соц сетей.
+        /// </summary>
         private class ChallengeResult : HttpUnauthorizedResult
         {
+            /// <summary>
+            /// Ctor that takes 2 arguments
+            /// </summary>
+            /// <param name="provider"></param>
+            /// <param name="redirectUrl"></param>
             public ChallengeResult(string provider, string redirectUrl)
             {
                 LoginProvider = provider;
@@ -156,5 +231,44 @@ namespace WebStorage.UI.Controllers
             }
         }
         #endregion
-    } 
+
+        #region ///////////////////////////////////// Dispose //////////////////////////////////////
+        /// <summary>
+        /// Dispose
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_userManager != null)
+                {
+                    _userManager.Dispose();
+                    _userManager = null;
+                }
+
+                if (_signInManager != null)
+                {
+                    _signInManager.Dispose();
+                    _signInManager = null;
+                }
+            }
+
+            base.Dispose(disposing);
+        }
+        #endregion
+
+        /// <summary>
+        /// Add error to ModelState
+        /// </summary>
+        /// <param name="result"></param>
+        private void AddErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error);
+            }
+        }
+    }
 }
+////////////////////////////////////////////// END ///////////////////////////////////////////

@@ -33,24 +33,31 @@
         <label>Password</label>
         @Html.PasswordFor(x => x.Password, new { @class= "form-control", placeholder = "Please, enter your password" })        
     </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <div class="checkbox">
+                @Html.CheckBoxFor(m => m.remember)
+                @Html.LabelFor(m => m.remember)
+            </div>
+        </div>
+    </div>
     <button class="btn btn-default" type="submit">Log In</button>
-    @Html.ActionLink("Sign in", "Create", "Manager")
+    @Html.ActionLink("Create account", "Create", "Manager")
 }
 
-@{ 
+@{
     var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
     foreach (var p in loginProviders)
     {
-        
         using (Html.BeginForm("ExtLogin", "Account"))
         {
             string templ = p.AuthenticationType.ToLowerInvariant();
             if (templForBtn.ContainsKey(templ))
             {
-                    <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
-                    <button class="btn btn-social-icon btn-@templForBtn[templ]" type="submit" name="provider" value="@p.AuthenticationType">
-                        <span class="fa fa-@templForBtn[templ]"></span>
-                    </button>
+                @Html.AntiForgeryToken()
+                <button class="btn btn-social-icon btn-@templForBtn[templ]" type="submit" name="provider" value="@p.AuthenticationType">
+                    <span class="fa fa-@templForBtn[templ]"></span>
+                </button>
             }
         }
     }

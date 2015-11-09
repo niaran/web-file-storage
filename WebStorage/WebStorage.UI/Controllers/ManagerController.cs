@@ -18,58 +18,67 @@ using System.Web.Mvc;
 
 namespace WebStorage.UI.Controllers
 {
+    [Authorize]
     public class ManagerController : Controller
     {
+        #region /////////////////////////////////// Properties ///////////////////////////////////
+
+        private AppUserManager UserManager
+        {
+            get { return HttpContext.GetOwinContext().GetUserManager<AppUserManager>(); }
+        }
+        #endregion
+
+        /*
+        Этот метод действия представлен в качестве тестового.
+        На самом деле в дальнейшем такого не будет.
+
+        Также необходимо будет исправить в дальнейшем некоторые 
+        перенаправления к представлениям.
+        */
         public ActionResult Index()
         {
             return View(UserManager.Users);
         }
 
-        private AppUserManager UserManager
-        {
-            get
-            {
-                return HttpContext.GetOwinContext().GetUserManager<AppUserManager>();
-            }
-        }
+        #region /////////////////////////////// Create user section ///////////////////////////////
 
-        #region create section
+        /// <summary>
+        /// Create /Get/
+        /// </summary>
+        /// <returns></returns>
+        // Создать пользователя
         public ActionResult Create()
         {
             return View();
         }
 
+        /// <summary>
+        /// Create /Post/
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(UserViewModel user)
         {
             if (ModelState.IsValid)
             {
+                // создаем переменную пользователя типа AppUser
                 AppUser _user = new AppUser() { UserName = user.Name, Email = user.Email };
+                // Сохраняем в базу
                 IdentityResult _result = await UserManager.CreateAsync(_user, user.Password);
                 if (_result.Succeeded)
                 {
+                    // Создаем корневую директорию пользователя
                     _user.CreateMainFolder();
+                    // Сохраняем это
                     IdentityResult _res = await UserManager.UpdateAsync(_user);
                     if (!_res.Succeeded)
                     {
                         return View(user);
                     }
-                    AppUser User = await UserManager.FindAsync(user.Name, user.Password);
-                    // генерируем токен для подтверждения регистрации
-                    var code = await UserManager.GenerateEmailConfirmationTokenAsync(User.Id);
-                    // создаем ссылку для подтверждения
-                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = User.Id, code = code },
-                               protocol: Request.Url.Scheme);
-                    // отправка письма
-                    await UserManager.SendEmailAsync(User.Id, "Подтверждение электронной почты",
-                               "Для завершения регистрации перейдите по ссылке:: <a href=\""
-                                                               + callbackUrl + "\">завершить регистрацию</a>");
-
-                    return View("DisplayEmail");
-
-                    //return RedirectToAction("Index");
+                    return RedirectToAction("Index");
                 }
                 else
                 {
@@ -80,8 +89,14 @@ namespace WebStorage.UI.Controllers
         }
         #endregion
 
-        #region delete section
+        #region /////////////////////////////// Delete user section /////////////////////////////// 
+        /// <summary>
+        /// Delete user
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(String Id)
         {
             AppUser _user = await UserManager.FindByIdAsync(Id);
@@ -104,7 +119,12 @@ namespace WebStorage.UI.Controllers
         }
         #endregion
 
-        #region edit section
+        #region //////////////////////////////// Edit user section ////////////////////////////////
+        /// <summary>
+        /// Edit user info /Get/
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
         public async Task<ActionResult> Edit(String Id)
         {
             AppUser _user = await UserManager.FindByIdAsync(Id);
@@ -118,7 +138,15 @@ namespace WebStorage.UI.Controllers
             }
         }
 
+        /// <summary>
+        /// Edit user info /Post/
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <param name="email"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         [HttpPost]
+        //[ValidateAntiForgeryToken] ???????????????????????
         public async Task<ActionResult> Edit(String Id, String email, String password)
         {
             AppUser _user = await UserManager.FindByIdAsync(Id);
@@ -169,6 +197,10 @@ namespace WebStorage.UI.Controllers
         }
         #endregion
 
+        /// <summary>
+        /// Add errors to ModelState.AddModelError
+        /// </summary>
+        /// <param name="result"></param>
         private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)
@@ -178,3 +210,4 @@ namespace WebStorage.UI.Controllers
         }
     }
 }
+////////////////////////////////////////////// END ///////////////////////////////////////////
