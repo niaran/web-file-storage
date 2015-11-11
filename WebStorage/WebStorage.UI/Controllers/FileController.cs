@@ -111,7 +111,14 @@ namespace WebStorage.UI.Controllers
                 ViewBag.Folder = null;
                 return View(_fileManeger.dbContext.SystemFiles.Where(x => x.Owner.UserName == HttpContext.User.Identity.Name && x.ParentFolder == null));
             }
-            ViewBag.Folder = _fileManeger.GetFile(folderId);
+
+            SystemFile folder = _fileManeger.GetFile(folderId);
+            if (folder == null)
+                throw new KeyNotFoundException();
+            if (folder.Owner.UserName != HttpContext.User.Identity.Name)
+                throw new UnauthorizedAccessException();
+
+            ViewBag.Folder = folder;
             return View(_fileManeger.GetFolderContent(folderId));
         }
 
@@ -127,5 +134,41 @@ namespace WebStorage.UI.Controllers
             return View();
         }
 
+        [AllowAnonymous]
+        public FileResult Download(int? Id)
+        {
+            if (Id != null)
+            {
+                SystemFile file = _fileManeger.GetFile(Id);
+                if (file.IsFile)
+                    return File(file.Path, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name + "." + file.Format);
+                else
+                    //TODO: Папку нужно заархивировать. Пока не пашет
+                    return null;//File(file.Path, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name + ".7z");
+            }
+            else throw new NullReferenceException();
+        }
+
+        /*[AllowAnonymous]
+        public ActionResult SharedAccess(string key)
+        {
+            if (key != null)
+            {
+                SystemFile file = _fileManeger.GetFileByShareId(key);
+                if (file.IsFile)
+                    return View("FileShare", file);
+                else
+                {
+                    //TODO
+                    ViewBag.Folder = file;
+                    if (TempData["Root"] == null)
+                        TempData["Root"] = key;
+                    return View("FolderShare", _fileManeger.GetFolderContent(file.Id));
+                }
+
+            }
+                
+            return null;
+        }*/
     }
 }

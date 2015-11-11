@@ -8,22 +8,29 @@
 <head>
     
     <meta name="viewport" content="width=device-width" />
-    
+    <script type="text/javascript" src="~/Scripts/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="~/Scripts/rightClickMenu.js"></script>
+    <link href="~/Content/File.css" type="text/css" rel="stylesheet" />
+
 </head>
 
 <body>
     
         @if (ViewBag.Folder != null)
-            {
+        {
                 <text><h1> @ViewBag.Folder.Name </h1></text>
         @Html.ActionLink("Up", "Index", new { folderId = ViewBag.Folder.ParentId })
-            }
-    
-    
-    @foreach(var file in Model)
-        {
-        Html.RenderPartial("FileInfo", file);
         }
+    
+    
+    @{
+        foreach (var file in Model)
+        {
+            Html.RenderPartial("FileInfo", file);
+        }
+    }
+    
+
     
 </body>
 

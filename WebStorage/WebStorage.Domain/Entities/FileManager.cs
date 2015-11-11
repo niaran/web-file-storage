@@ -115,6 +115,7 @@ namespace WebStorage.Domain.Entities
             return sysFolder.Path;
         }
 
+
         //метод для поиска файла или папки по id. 
         public SystemFile GetFileById(int id)
         {
@@ -123,6 +124,8 @@ namespace WebStorage.Domain.Entities
                                  select file).FirstOrDefault();
             return result;
         }
+
+
 
         //Метод удаления файла
         public async Task<bool> DeleteSingleFile(SystemFile file)
@@ -191,7 +194,7 @@ namespace WebStorage.Domain.Entities
             return await DeleteSingleFile(file);
         }
 
-	    public IQueryable<SystemFile> GetFolderContent(int? folderId)
+        public IQueryable<SystemFile> GetFolderContent(int? folderId)
         {
             return dbContext.SystemFiles.Where(x => x.ParentId == folderId);
         }
@@ -269,5 +272,17 @@ namespace WebStorage.Domain.Entities
             return sysFile.Sharing_Id;
         }
 
+        public int GetFileIdByShareId(string shareID)
+        {
+            return dbContext.SystemFiles
+                .Where(x => x.Sharing_Id == shareID)
+                .Select(x => x.Id)
+                .FirstOrDefault();
+        }
+
+        public SystemFile GetFileByShareId(string shareId)
+        {
+            return dbContext.SystemFiles.Where(x => x.Sharing_Id == shareId).FirstOrDefault();
+        }
     }
 }

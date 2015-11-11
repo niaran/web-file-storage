@@ -48,6 +48,22 @@ namespace WebStorage.Domain.Entities
 
         [Required]
         public bool IsFile { get; set; }
+
+        public string SizeAsMemory()
+        {
+            const int scale = 1024;
+            string[] orders = new string[] { "GB", "MB", "KB", "Bytes" };
+            long max = (long)Math.Pow(scale, orders.Length - 1);
+
+            foreach (string order in orders)
+            {
+                if (Size > max)
+                    return string.Format("{0:##.##} {1}", decimal.Divide(Size, max), order);
+
+                max /= scale;
+            }
+            return "0 Bytes";
+        }
     }
 
     public enum ShareType

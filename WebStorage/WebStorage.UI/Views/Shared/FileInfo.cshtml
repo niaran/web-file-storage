@@ -1,9 +1,11 @@
 ﻿@model WebStorage.Domain.Entities.SystemFile
 
 <div class="file" 
-     @if (!Model.IsFile) { <text>
-     onclick="window.location.href = '@Url.Action("Index", "File", new { folderId = Model.Id })'"
-     </text>   }>
+     @if (!Model.IsFile) {
+
+             <text>onclick="window.location.href = '@Url.Action("Index", "File", new { folderId = Model.Id })'"</text>
+     }>
+
     @{
         string imgPath = "";
         if (Model.IsFile)
@@ -25,8 +27,21 @@
         </div>
     }
 
-    <h3>@Model.Name @if (Model.IsFile) {<text>.@Model.Format</text>}</h3>
+    <h3>@Model.Name@if (Model.IsFile) {<text>.@Model.Format</text>}</h3>
     <div style=" clear:both"></div>
-    <p>Created:@Model.Uploaded</p>
-    <p>Size:@Model.Size</p>
+    <p>Uploaded:@Model.Uploaded by @Model.Owner.UserName</p>
+    <p>Size:@Model.SizeAsMemory() </ p >
+        <div id="custom-menu">
+            <ol>
+                <li>
+                    @Html.ActionLink("Download", "Download", new { key = Model.Sharing_Id })
+                </li>
+                <li class="list-divider"><hr /></li>
+                <li>
+                    @Html.ActionLink("Delete", "Delete", new { id = Model.Id})
+                </li>
+
+            </ol>
+
+        </div>
 </div>
