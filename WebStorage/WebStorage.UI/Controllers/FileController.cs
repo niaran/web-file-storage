@@ -29,24 +29,22 @@ namespace WebStorage.UI.Controllers
             _fileManeger = new FileManager();
         }
 
-
-        [Authorize]
-        [HttpGet]
-        public ActionResult Create()
-        {
-            return View();
-        }
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult> Create(object obj)
+        public async Task<ActionResult> Create(object obj, int? ParentId)
         {
+            SystemFile _ParentElement = null;
+            if (ParentId != null)
+            {
+                _ParentElement = _fileManeger.GetFileById((int)ParentId);
+            }
             //достаем юзера, для дальнейшей работы
             string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
             AppUser user = await UserManager.FindByNameAsync(user_name);
             if (user == null)
             {
                 ModelState.AddModelError("", "User not found");
-                return View();
+                return Redirect(Request.UrlReferrer.AbsoluteUri);
             }
 
             //достаем файлы из пост-запроса
@@ -58,35 +56,34 @@ namespace WebStorage.UI.Controllers
                 {
                     continue;
                 }
-                var res = await _fileManeger.SaveSingleFile(new FileInfo(temp.FileName), user, ViewBag.Folder, temp.ContentLength);
+                var res = await _fileManeger.SaveSingleFile(new FileInfo(temp.FileName), user, _ParentElement, temp.ContentLength);
                 temp.SaveAs(res);
             }
-            return View();
+            return Redirect(Request.UrlReferrer.AbsoluteUri);
         }
 
         [Authorize]
-        [HttpGet]
-        public ActionResult CreateFolder()
-        {
-            return View();
-        }
-        [Authorize]
         [HttpPost]
-        public async Task<ActionResult> CreateFolder(string folderName)
+        public async Task<ActionResult> CreateFolder(string folderName, int? ParentId)
         {
+            SystemFile _ParentElement = null;
+            if (ParentId != null)
+            {
+                _ParentElement = _fileManeger.GetFileById((int)ParentId);
+            }
             string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
             AppUser user = await UserManager.FindByNameAsync(user_name);
             if (user == null)
             {
                 ModelState.AddModelError("", "User not found");
-                return View();
+                return Redirect(Request.UrlReferrer.AbsoluteUri);
             }
-            string path = await _fileManeger.CreateFolder(folderName, user, ViewBag.Folder);
+            string path = await _fileManeger.CreateFolder(folderName, user, _ParentElement);
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
-            return View();
+            return Redirect(Request.UrlReferrer.AbsoluteUri);
         }
 
         [Authorize]
@@ -96,10 +93,10 @@ namespace WebStorage.UI.Controllers
             if (await _fileManeger.DeleteSystemFile(id) == true)
             {
                 ViewBag.Result = "Файл удален";
-                return View();
+                return Redirect(Request.UrlReferrer.AbsoluteUri);
             }
             ViewBag.Result = "Возникли ошибки";
-            return View();
+            return Redirect(Request.UrlReferrer.AbsoluteUri);
         }
 
         [Authorize]

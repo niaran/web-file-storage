@@ -220,7 +220,8 @@
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\FileImg\default.png" />
     <Content Include="Content\FileImg\doc.jpg" />
-    <Content Include="Content\FileImg\folder.png" />    <Content Include="Content\Site.css" />
+    <Content Include="Content\FileImg\folder.png" />
+    <Content Include="Content\Site.css" />
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -275,13 +276,11 @@
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Manager\Index.cshtml" />
     <Content Include="Views\Manager\Edit.cshtml" />
-    <Content Include="Views\File\Create.cshtml" />
-    <Content Include="Views\File\CreateFolder.cshtml" />
-    <Content Include="Views\File\Delete.cshtml" />
     <Content Include="Views\File\Index.cshtml" />
     <Content Include="Views\Shared\FileInfo.cshtml" />
     <Content Include="Views\File\ShareReadOnly.cshtml" />
- <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />    <None Include="Web.Debug.config">
+    <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
+    <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">

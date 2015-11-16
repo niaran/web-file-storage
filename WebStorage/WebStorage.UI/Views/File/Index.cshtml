@@ -6,32 +6,244 @@
 <html>
 
 <head>
-    
+
     <meta name="viewport" content="width=device-width" />
     <script type="text/javascript" src="~/Scripts/jquery-2.1.4.js"></script>
     <script type="text/javascript" src="~/Scripts/rightClickMenu.js"></script>
     <link href="~/Content/File.css" type="text/css" rel="stylesheet" />
+    <style>
+        a:link {
+            color: blue;
+        }
 
+        a:visited {
+            color: blue;
+        }
+
+        a:hover {
+            color: orange;
+            text-decoration: none;
+        }
+
+        a:active {
+            color: blue;
+            text-decoration: none;
+        }
+
+        table :hover {
+            cursor: pointer;
+        }
+
+        #singleFileUpload, #folderUpload, #folderCreate {
+            display: none;
+            margin: 2px;
+        }
+
+        .edit-menu {
+            margin-bottom: 10px;
+        }
+
+        .UpButton {
+            font-size: 24px;
+        }
+    </style>
 </head>
 
 <body>
-    
-        @if (ViewBag.Folder != null)
-        {
-                <text><h1> @ViewBag.Folder.Name </h1></text>
-        @Html.ActionLink("Up", "Index", new { folderId = ViewBag.Folder.ParentId })
-        }
-    
-    
-    @{
-        foreach (var file in Model)
-        {
-            Html.RenderPartial("FileInfo", file);
-        }
-    }
-    
+    <div class="row ">
+        <div class="col-lg-1 UpButton">
+            @if (ViewBag.Folder != null)
+            {
+                @Html.ActionLink(" ", "Index", new { folderId = ViewBag.Folder.ParentId }, new { @class = "glyphicon glyphicon-level-up  " })
+            }
+        </div>
+        <div class="col-lg-6 UpButton">
+            @if (ViewBag.Folder != null)
+            {
+                <strong> @ViewBag.Folder.Name</strong>
+            }
+        </div>
+        <button onclick="forSingleFileForm()" class="btn btn-default col-lg-1 col-lg-offset-2">
+            <span class="glyphicon glyphicon-file">
+            </span>
+            <span class="glyphicon glyphicon-upload">
+            </span>
+        </button>
+        <button onclick="forFolderForm()" class="btn btn-default col-lg-1 ">
+            <span class="glyphicon glyphicon-folder-open">
+            </span>
+            <span class="glyphicon glyphicon-upload">
+            </span>
+        </button>
+        <button onclick="forFolderCreate()" class="btn btn-default col-lg-1">
+            <span class="glyphicon glyphicon-folder-open">
+            </span>
+            <span class="glyphicon glyphicon-plus">
+            </span>
+        </button>
+    </div>
+    <div class="row edit-menu">
+        <div id="singleFileUpload" class="row text-center">
+            Загрузка файлов
+            @using (Html.BeginForm("Create", "File", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-inline" }))
+            {
+                <input class="form-control  " type="file" name="uploadedFile" id="uploadedFile" multiple />
+                <input class="form-control" type="submit" value="Загрузить" />
+                if (ViewBag.Folder != null)
+                {
+                    <input type="hidden" value="@ViewBag.Folder.Id" name="ParentId" />
+                }
+            }
+        </div>
+        <div id="folderUpload" class="row text-center">
+            Загрузка папки
+            @using (Html.BeginForm("Create", "File", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-inline" }))
+            {
+                <input class="form-control" type="file" name="uploadedFile" id="uploadedFile" webkitdirectory directory multiple />
+                <input class="form-control" type="submit" value="Загрузить" />
+                if (ViewBag.Folder != null)
+                {
+                    <input type="hidden" value="@ViewBag.Folder.Id" name="ParentId" />
+                }
+            }
+        </div>
+        <div id="folderCreate" class="row text-center">
+            Создание папки
+            @using (Html.BeginForm("CreateFolder", "File", FormMethod.Post, new { @class = "form-inline" }))
+            {
+                <input type="text" class="form-control" name="folderName" id="folderName" />
+                <input type="submit" class="form-control" value="Создать" />
+                if (ViewBag.Folder != null)
+                {
+                    <input type="hidden" value="@ViewBag.Folder.Id" name="ParentId" />
+                }
+            }
+        </div>
 
-    
+    </div>
+    <table class="table table-bordered table-hover table-condense">
+        <tr>
+            <th>
+                Имя
+            </th>
+            <th>
+                Загружен
+            </th>
+            <th>
+                Шаринг
+            </th>
+            <th>
+                Формат
+            </th>
+            <th>
+                Размер
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr @if (!item.IsFile) { <text> onclick="window.location.href = '@Url.Action("Index", "File", new { folderId = item.Id })'" </text>                 }>
+                <td>
+                    @if (item.IsFile)
+                    {
+                        <span class="glyphicon glyphicon-file"></span>
+                    }
+                    else
+                    {
+                        <span class="glyphicon glyphicon-folder-open"></span>
+                    }
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Uploaded)
+                </td>
+                <td>
+                    @if (item.Sharing_Atribute == 1)
+                    {
+                        @:Не расшарен
+                    }
+                    else if (item.Sharing_Atribute == 2)
+                    {
+                        @:Расшарен на чтение
+                    }
+                    else
+                    {
+                        @:Расшарен на редактирование
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Format)
+                </td>
+                <td>
+                    @item.SizeAsMemory()
+                </td>
+                <td>
+
+                    @Html.ActionLink(" ", "Delete", new { id = item.Id }, new { @class = "glyphicon glyphicon-trash" })
+                    @Html.ActionLink(" ", "ShareReadOnly", new { id = item.Id }, new { @class = "glyphicon glyphicon-share" })
+                    @Html.ActionLink(" ", "Info", new { id = item.Id }, new { @class = "glyphicon glyphicon-info-sign" })
+                </td>
+
+            </tr>
+
+        }
+
+    </table>
+    <script>
+        var singleFileUploadValue = "none";
+        var folderUploadValue = "none";
+        var folderCreateValue = "none";
+
+        function forSingleFileForm() {
+            if (folderUploadValue == "block") {
+                forFolderForm();
+            }
+            if (folderCreateValue == "block") {
+                forFolderCreate();
+            }
+            if (singleFileUploadValue == "none") {
+                $("#singleFileUpload").css("display", "block");
+                singleFileUploadValue = "block";
+            }
+            else {
+                $("#singleFileUpload").css("display", "none");
+                singleFileUploadValue = "none";
+            }
+        }
+        function forFolderForm() {
+            if (singleFileUploadValue == "block") {
+                forSingleFileForm();
+            }
+            if (folderCreateValue == "block") {
+                forFolderCreate();
+            }
+            if (folderUploadValue == "none") {
+                $("#folderUpload").css("display", "block");
+                folderUploadValue = "block";
+            }
+            else {
+                $("#folderUpload").css("display", "none");
+                folderUploadValue = "none";
+            }
+        }
+        function forFolderCreate() {
+            if (singleFileUploadValue == "block") {
+                forSingleFileForm();
+            }
+            if (folderUploadValue == "block") {
+                forFolderForm();
+            }
+            if (folderCreateValue == "none") {
+                $("#folderCreate").css("display", "block");
+                folderCreateValue = "block";
+            }
+            else {
+                $("#folderCreate").css("display", "none");
+                folderCreateValue = "none";
+            }
+        }
+    </script>
 </body>
 
 </html>

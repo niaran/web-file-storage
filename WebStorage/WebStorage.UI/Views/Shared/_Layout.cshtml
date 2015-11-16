@@ -18,8 +18,20 @@
     </style>
 </head>
 <body class="container">
-    <div class="container">
-        @RenderBody()
+    <nav class="row">
+        <ul class="nav nav-pills nav-justified  img-rounded thumbnail">
+            <li class="text-center"><strong>ShareBox</strong></li>
+            <li><input type="text" class="form-control" placeholder="Search" /></li>
+            <li>@Html.ActionLink("Files", "Index", "File")</li>
+            <li>@Html.ActionLink("Shared", "SharedList", "File")</li>
+            <li>@Html.ActionLink("Account", "Index", "Manager")</li>
+        </ul>
+    </nav>
+    <div class="row">
+        <div class="container">
+            @RenderBody()
+        </div>
     </div>
+
 </body>
 </html>
