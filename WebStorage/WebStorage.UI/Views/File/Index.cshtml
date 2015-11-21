@@ -87,8 +87,12 @@
             Загрузка файлов
             @using (Html.BeginForm("Create", "File", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-inline" }))
             {
-                <input class="form-control  " type="file" name="uploadedFile" id="uploadedFile" multiple />
+                <script src="~/Scripts/NoLargeFiles.js"></script>
+                <span id="uploadErr" hidden>Ограничение на размер загружаемого файла - 100Mb</span>
+                <br/>
+                <input class="form-control  " type="file" name="uploadedFile" id="uploadedFile" multiple onchange="sizeCheck()"/>
                 <input class="form-control" type="submit" value="Загрузить" />
+                
                 if (ViewBag.Folder != null)
                 {
                     <input type="hidden" value="@ViewBag.Folder.Id" name="ParentId" />
@@ -99,7 +103,7 @@
             Загрузка папки
             @using (Html.BeginForm("Create", "File", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-inline" }))
             {
-                <input class="form-control" type="file" name="uploadedFile" id="uploadedFile" webkitdirectory directory multiple />
+                <input class="form-control" type="file" name="uploadedDir" id="uploadedDir" webkitdirectory directory multiple />
                 <input class="form-control" type="submit" value="Загрузить" />
                 if (ViewBag.Folder != null)
                 {
