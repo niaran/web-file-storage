@@ -13,11 +13,27 @@ namespace WebStorage.UI
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            routes.MapRoute("", "Shared/{rootSharingId}/{contentId}", new
+            {
+                controller = "SharedFile",
+                action = "Index",
+                contentId = UrlParameter.Optional
+            });
+
+            routes.MapRoute("", "Shared/{rootSharingId}/{action}/{contentId}", new
+            {
+                controller = "SharedFile",
+                action = "Index",
+                contentId = UrlParameter.Optional
+            });
+
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
+
+
         }
     }
 }

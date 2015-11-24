@@ -284,5 +284,34 @@ namespace WebStorage.Domain.Entities
         {
             return dbContext.SystemFiles.Where(x => x.Sharing_Id == shareId).FirstOrDefault();
         }
+
+
+        //Получение расшареного файла с проверкой доступа к нему
+        //Если доступ разрешен - вернет файл, если запрещен - null
+        public SystemFile AccessSharedFile(string link, int? id)
+        { 
+            if (link == null)
+                return null;
+            SystemFile file;
+            if (id != null)
+            {
+                file = GetFileById(id.Value);
+                SystemFile f = file;
+                while (f != null)
+                {
+                    if (f.Sharing_Id != null && link == f.Sharing_Id)
+                    {
+                        return file;
+                    }
+                    f = f.ParentFolder;
+                }
+                return null;
+            }
+            else
+            {
+                file = GetFileByShareId(link);
+                return file;
+            }
+        }
     }
 }
