@@ -131,23 +131,28 @@ namespace WebStorage.UI.Controllers
 
 
         [Authorize]
-        public ActionResult Index(int? folderId)
+        public async Task<ActionResult> Index(int? folderId)
         {
+            if (Request.Cookies["OrderBy"]!= null)
+            {
+                _fileManeger.OrderValue = int.Parse(Request.Cookies["OrderBy"].Value);
+            }
+            string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
+            AppUser user = await UserManager.FindByNameAsync(user_name);
+
             //Если папка не передана, то выведет корень - все папки, к которым имеет доступ текущий юзер
             if (folderId == null)
             {
                 ViewBag.Folder = null;
-                return View(_fileManeger.dbContext.SystemFiles.Where(x => x.Owner.UserName == HttpContext.User.Identity.Name && x.ParentFolder == null));
+                return View(_fileManeger.GetFolderContentWithUser(null, user));
             }
-
             SystemFile folder = _fileManeger.GetFile(folderId);
             if (folder == null)
                 throw new KeyNotFoundException();
             if (folder.Owner.UserName != HttpContext.User.Identity.Name)
                 throw new UnauthorizedAccessException();
-
             ViewBag.Folder = folder;
-            return View(_fileManeger.GetFolderContent(folderId));
+            return View(_fileManeger.GetFolderContentWithUser(folderId, user));
         }
 
         //Расшариваем файл 
@@ -225,6 +230,14 @@ namespace WebStorage.UI.Controllers
                     return null;//File(file.Path, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name + ".7z");
             }
             else throw new NullReferenceException();
+        }
+
+       
+        public ActionResult OrderList(int orderBy)
+        {
+            var userCookie = new HttpCookie("OrderBy", orderBy.ToString());
+            HttpContext.Response.Cookies.Add(userCookie);
+            return RedirectToAction("Index");
         }
     }
 }

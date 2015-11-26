@@ -10,13 +10,17 @@ using System.IO;
 
 namespace WebStorage.Domain.Entities
 {
+
     // Класс для работы с файлами (удалять, добавлять, переименовывать и тд)
     public class FileManager : IFileManager
     {
         public AppDbContext dbContext;
+        public int OrderValue{get; set;}
+        
         public FileManager()
         {
             dbContext = AppDbContext.Create();
+            OrderValue = (int)OrderType.ByDate;
         }
 
         public FileManager(AppDbContext db)
@@ -202,9 +206,33 @@ namespace WebStorage.Domain.Entities
 
         public IQueryable<SystemFile> GetFolderContent(int? folderId)
         {
-            return dbContext.SystemFiles.Where(x => x.ParentId == folderId);
-        }
+            if (OrderValue == (int)OrderType.ByDate)
+            {
+                return dbContext.SystemFiles.Where(x => x.ParentId == folderId).OrderBy(m => m.Uploaded);
+            }
+            else if (OrderValue == (int)OrderType.ByName)
+            {
+                return dbContext.SystemFiles.Where(x => x.ParentId == folderId).OrderBy(m => m.Name);
+            }
 
+            else if (OrderValue == (int)OrderType.ByShareAtribute)
+            {
+                return dbContext.SystemFiles.Where(x => x.ParentId == folderId).OrderBy(m => m.Sharing_Atribute);
+            }
+
+            else if (OrderValue == (int)OrderType.ByFormat)
+            {
+                return dbContext.SystemFiles.Where(x => x.ParentId == folderId).OrderBy(m => m.Format);
+            }
+            else
+            {
+                return dbContext.SystemFiles.Where(x => x.ParentId == folderId).OrderBy(m => m.Size);
+            }
+        }
+        public IQueryable<SystemFile> GetFolderContentWithUser(int? folderId, AppUser user)
+        {
+            return GetFolderContent(folderId).Where(x => x.OwnerId == user.Id);
+        }
         public SystemFile GetFile(int? Id)
         {
             return dbContext.SystemFiles.Where(x => x.Id == Id).FirstOrDefault();
@@ -302,7 +330,7 @@ namespace WebStorage.Domain.Entities
         //Получение расшареного файла с проверкой доступа к нему
         //Если доступ разрешен - вернет файл, если запрещен - null
         public SystemFile AccessSharedFile(string link, int? id)
-        { 
+        {
             if (link == null)
                 return null;
             SystemFile file;
@@ -326,5 +354,14 @@ namespace WebStorage.Domain.Entities
                 return file;
             }
         }
+    }
+
+    public enum OrderType
+    {
+        ByDate = 1,
+        ByName = 2,
+        ByShareAtribute = 3,
+        ByFormat = 4,
+        BySize = 5
     }
 }
