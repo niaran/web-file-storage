@@ -28,11 +28,7 @@ namespace WebStorage.Domain.Concrete
                 .HasRequired(o => o.Owner)
                 .WithMany()
                 .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<EditFileInfo>()
-                .HasRequired(o => o.UserEdited)
-                .WithMany()
-                .WillCascadeOnDelete(false);
+            
 
             base.OnModelCreating(modelBuilder);
         }

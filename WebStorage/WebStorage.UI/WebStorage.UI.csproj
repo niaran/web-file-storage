@@ -282,9 +282,10 @@
     <Content Include="Views\Manager\Edit.cshtml" />
     <Content Include="Views\File\Index.cshtml" />
     <Content Include="Views\Shared\FileInfo.cshtml" />
-    <Content Include="Views\File\ShareReadOnly.cshtml" />
     <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
     <Content Include="Views\SharedFile\SharedFolder.cshtml" />
+    <Content Include="Views\File\Info.cshtml" />
+    <Content Include="Views\File\SharedList.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

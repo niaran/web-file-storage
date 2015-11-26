@@ -124,7 +124,13 @@ namespace WebStorage.Domain.Entities
                                  select file).FirstOrDefault();
             return result;
         }
-
+        public List<SystemFile> GetUserSharedFiles(AppUser user)
+        {
+            var result = from file in dbContext.SystemFiles
+                         where user.Id == file.OwnerId && file.Sharing_Id != null
+                         select file;
+            return result.ToList();
+        }
 
 
         //Метод удаления файла
@@ -263,11 +269,18 @@ namespace WebStorage.Domain.Entities
             SystemFile sysFile = GetFileById(sysFileId);
             if (sysFile == null)
             {
-                return String.Empty;
+                return null;
             }
             await ChangeShareStateSystemFile(shareState, sysFile);
-            //генерируем уникальную ссылку для файла/папки
-            sysFile.Sharing_Id = GenerateRandomString() + sysFile.Id.ToString();
+
+            if (shareState == (int)ShareType.ShareReadOnly)
+            {   //генерируем уникальную ссылку для файла/папки
+                sysFile.Sharing_Id = GenerateRandomString() + sysFile.Id.ToString();
+            }
+            else
+            {
+                sysFile.Sharing_Id = null;
+            }
             await dbContext.SaveChangesAsync();
             return sysFile.Sharing_Id;
         }

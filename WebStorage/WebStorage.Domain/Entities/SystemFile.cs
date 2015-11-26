@@ -49,6 +49,12 @@ namespace WebStorage.Domain.Entities
         [Required]
         public bool IsFile { get; set; }
 
+        public virtual ICollection<EditFileInfo> EditHistory { get; set; }
+        public SystemFile()
+        {
+            EditHistory = new List<EditFileInfo>();
+        }
+
         public string SizeAsMemory()
         {
             const int scale = 1024;

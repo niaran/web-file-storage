@@ -90,6 +90,15 @@ namespace WebStorage.UI.Controllers
         [HttpGet]
         public async Task<ActionResult> Delete(int id)
         {
+            //Проверяем текущего юзера на владение папки или файла.
+            string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
+            AppUser user = await UserManager.FindByNameAsync(user_name);
+            SystemFile file = _fileManeger.GetFile(id);
+            if (user == null || file.OwnerId != user.Id || file == null)
+            {
+                return null;
+            }
+            //Удаляем папку
             if (await _fileManeger.DeleteSystemFile(id) == true)
             {
                 ViewBag.Result = "Файл удален";
@@ -98,6 +107,28 @@ namespace WebStorage.UI.Controllers
             ViewBag.Result = "Возникли ошибки";
             return Redirect(Request.UrlReferrer.AbsoluteUri);
         }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult> Info(int? id)
+        {
+            if (id == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            //Проверяем текущего юзера на владение папки или файла.
+            string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
+            AppUser user = await UserManager.FindByNameAsync(user_name);
+            SystemFile file = _fileManeger.GetFile(id);
+
+            if (user == null || file == null || file.OwnerId != user.Id)
+            {
+                return null;
+            }
+            return View(file);
+        }
+
 
         [Authorize]
         public ActionResult Index(int? folderId)
@@ -119,24 +150,74 @@ namespace WebStorage.UI.Controllers
             return View(_fileManeger.GetFolderContent(folderId));
         }
 
-        //Расшариваем файл только для чтения
+        //Расшариваем файл 
         [Authorize]
         public async Task<ActionResult> ShareReadOnly(int id)
         {
-            ViewBag.Result = "Не получилось расшарить";
-            if (await _fileManeger.Share((int)ShareType.ShareReadOnly, id) != String.Empty)
+            SystemFile file = _fileManeger.GetFile(id);
+            //Проверяем текущего юзера на владение папки.
+            string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
+            AppUser user = await UserManager.FindByNameAsync(user_name);
+            if (user == null || file.OwnerId != user.Id || file == null)
+            {
+                return null;
+            }
+
+            if (await _fileManeger.Share((int)ShareType.ShareReadOnly, id) != null)
             {
                 ViewBag.Result = "Расшарено успешно";
             }
-            return View();
+            return Redirect(Request.UrlReferrer.AbsoluteUri);
+        }
+
+        //Аншарим файл 
+        [Authorize]
+        public async Task<ActionResult> ShareOwnerOnly(int id)
+        {
+            SystemFile file = _fileManeger.GetFile(id);
+            //Проверяем текущего юзера на владение папки.
+            string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
+            AppUser user = await UserManager.FindByNameAsync(user_name);
+            if (user == null || file.OwnerId != user.Id || file == null)
+            {
+                return null;
+            }
+
+            if (await _fileManeger.Share((int)ShareType.OwnerOnly, id) == null)
+            {
+                ViewBag.Result = "Аншарен успешно";
+            }
+            return Redirect(Request.UrlReferrer.AbsoluteUri);
+        }
+        [Authorize]
+        public async Task<ActionResult> SharedList()
+        {
+            ViewBag.Result = "У вас нет рассшаренных файлов  папок";
+            //достаем юзера, для дальнейшей работы
+            string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
+            AppUser user = await UserManager.FindByNameAsync(user_name);
+            if (user != null)
+            {
+                var sharedList = _fileManeger.GetUserSharedFiles(user);
+                return View(sharedList);
+            }
+            return RedirectToAction("Index");
         }
 
         [Authorize]
-        public FileResult Download(int? Id)
+        public async Task<FileResult> Download(int? Id)
         {
             if (Id != null)
             {
                 SystemFile file = _fileManeger.GetFile(Id);
+                //Проверяем текущего юзера на владение папки.
+                string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
+                AppUser user = await UserManager.FindByNameAsync(user_name);
+                if (user == null || file.OwnerId != user.Id)
+                {
+                    return null;
+                }
+
                 if (file.IsFile)
                     return File(file.Path, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name);
                 else
