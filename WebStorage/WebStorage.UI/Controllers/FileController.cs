@@ -226,8 +226,12 @@ namespace WebStorage.UI.Controllers
                 if (file.IsFile)
                     return File(file.Path, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name);
                 else
-                    //TODO: Папку нужно заархивировать. Пока не пашет
-                    return null;//File(file.Path, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name + ".7z");
+                {
+                    string path = _fileManeger.ArchiveTheFolder(file);
+                    var bytes = System.IO.File.ReadAllBytes(path);
+                    System.IO.File.Delete(path);
+                    return File(bytes, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name + ".zip");;
+                }   
             }
             else throw new NullReferenceException();
         }

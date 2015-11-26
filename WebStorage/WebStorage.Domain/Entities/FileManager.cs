@@ -7,6 +7,7 @@ using WebStorage.Domain.Abstract;
 using Microsoft.Owin;
 using WebStorage.Domain.Concrete;
 using System.IO;
+using System.IO.Compression;
 
 namespace WebStorage.Domain.Entities
 {
@@ -41,7 +42,12 @@ namespace WebStorage.Domain.Entities
             else
             {
                 //Увелиениче размера папки, в момент добаления файла
-                ParentElement.Size = ParentElement.Size + fileSize;
+                SystemFile f = ParentElement;
+                while (f != null)
+                {
+                    f.Size += fileSize;
+                    f = f.ParentFolder;
+                }
 
                 path = ParentElement.Path + "\\";
             }
@@ -54,7 +60,10 @@ namespace WebStorage.Domain.Entities
             sysFile.Path = path;
             sysFile.Size = fileSize;
             sysFile.Sharing_Atribute = (int)ShareType.OwnerOnly; //первоначально файл не расшаренный, а только для юзера
-            sysFile.Format = fileInfo.Extension;
+            if (fileInfo.Extension != "")
+                sysFile.Format = fileInfo.Extension;
+            else
+                sysFile.Format = "."+fileInfo.Name;
             sysFile.IsFile = true;
 
             if (ParentElement != null)
@@ -169,9 +178,11 @@ namespace WebStorage.Domain.Entities
                     return false;
                 }
             }
-            if (file.ParentFolder != null)
+            SystemFile f = file.ParentFolder;
+            while (f != null)
             {
-                file.ParentFolder.Size = file.ParentFolder.Size - file.Size;
+                f.Size -= file.Size;
+                f = f.ParentFolder;
             }
             try
             {
@@ -353,6 +364,14 @@ namespace WebStorage.Domain.Entities
                 file = GetFileByShareId(link);
                 return file;
             }
+        }
+
+        public string ArchiveTheFolder(SystemFile folder)
+        {
+            string zipPath = folder.Path + ".zip";
+            ZipFile.CreateFromDirectory(folder.Path, zipPath);
+            
+            return zipPath;
         }
     }
 
