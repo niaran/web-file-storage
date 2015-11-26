@@ -1,0 +1,103 @@
+﻿@model WebStorage.Domain.Entities.SystemFile
+
+@{
+    ViewBag.Title = "Info";
+}
+
+<h2 class="text-center">Подробная информация</h2>
+<p>
+    @Html.ActionLink("К списку", "Index")
+</p>
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            Имя
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            Дата загрузки
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Uploaded)
+        </dd>
+
+        <dt>
+            Размер
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Size)
+        </dd>
+
+        <dt>
+            Формат
+        </dt>
+
+        <dd>
+            @Model.SizeAsMemory()
+        </dd>
+
+        <dt>
+            Тип шаринга
+        </dt>
+
+        <dd>
+            @if (Model.Sharing_Atribute == 1)
+            {
+                @:Не расшарен
+                @Html.ActionLink(" ", "ShareReadOnly", new { id = Model.Id }, new { @class = "glyphicon glyphicon-share" })
+            }
+            else if (Model.Sharing_Atribute == 2)
+            {
+                @:Расшарен
+                @Html.ActionLink(" ", "ShareOwnerOnly", new { id = Model.Id }, new { @class = "glyphicon glyphicon-check" })
+            }
+        </dd>
+
+        <dt>
+            Ссылка для шаринга
+        </dt>
+
+        <dd>
+            @if (Model.Sharing_Id != null)
+            {
+                @:/Shared/@Html.DisplayFor(model => model.Sharing_Id)
+            }
+            else
+            {
+                @:-
+            }
+        </dd>
+
+    </dl>
+    <h4>@Html.ActionLink("Скачать", "Download", new { Id = Model.Id }, new { @class = "glyphicon glyphicon-download" })</h4>
+    <h4>@Html.ActionLink("Удалить", "Delete", new { id = Model.Id }, new { @class = "glyphicon glyphicon-trash" })</h4>
+
+
+    @if (Model.IsFile && Model.EditHistory.Count > 0)
+    {
+        <h4>История редактирования</h4>
+        <table class="table table-bordered table-condense">
+            <tr>
+
+                <th>Дата редактирования</th>
+            </tr>
+
+            @foreach (var item in Model.EditHistory)
+            {
+                <tr>
+                    <td>
+                        @item.Edited
+                    </td>
+                </tr>
+
+            }
+        </table>
+    }
+</div>
