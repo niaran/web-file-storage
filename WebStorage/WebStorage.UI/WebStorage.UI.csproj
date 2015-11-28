@@ -287,6 +287,7 @@
     <Content Include="Views\SharedFile\SharedFolder.cshtml" />
     <Content Include="Views\File\Info.cshtml" />
     <Content Include="Views\File\SharedList.cshtml" />
+    <Content Include="Views\File\SearchFiles.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -16,8 +16,8 @@ namespace WebStorage.Domain.Entities
     public class FileManager : IFileManager
     {
         public AppDbContext dbContext;
-        public int OrderValue{get; set;}
-        
+        public int OrderValue { get; set; }
+
         public FileManager()
         {
             dbContext = AppDbContext.Create();
@@ -63,7 +63,7 @@ namespace WebStorage.Domain.Entities
             if (fileInfo.Extension != "")
                 sysFile.Format = fileInfo.Extension;
             else
-                sysFile.Format = "."+fileInfo.Name;
+                sysFile.Format = "." + fileInfo.Name;
             sysFile.IsFile = true;
 
             if (ParentElement != null)
@@ -370,8 +370,27 @@ namespace WebStorage.Domain.Entities
         {
             string zipPath = folder.Path + ".zip";
             ZipFile.CreateFromDirectory(folder.Path, zipPath);
-            
+
             return zipPath;
+        }
+
+        //Ищем файл
+        public List<SystemFile> SearchFile(string searchEx)
+        {
+            var result = from f in dbContext.SystemFiles
+                         where f.Name.Contains(searchEx) == true
+                         select f;
+            return result.ToList();
+        }
+        //Ищем файл у юзера
+        public List<SystemFile> SearchFileForUser(string _searchEx, AppUser _user)
+        {
+            return SearchFile(_searchEx).Where(f => f.OwnerId == _user.Id).ToList();
+        }
+        //Ищем файл внутри определенной папки (для использования в шарринг контроллере) 
+        public List<SystemFile> SearchFileInParentFolder(string _searchEx, int parentFolderId)
+        {
+            return SearchFile(_searchEx).Where(f => f.ParentId == parentFolderId).ToList();
         }
     }
 

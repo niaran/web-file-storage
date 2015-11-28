@@ -15,6 +15,7 @@
         .validation-summary-errors {
             color: #f00;
         }
+
         a:hover {
             color: orange;
             text-decoration: none;
@@ -36,15 +37,22 @@
         .UpButton {
             font-size: 24px;
         }
-        td .glyphicon-folder-open{
-            color:gold
+
+        td .glyphicon-folder-open {
+            color: gold;
         }
+
         th {
-            background-color:wheat;
+            background-color: wheat;
         }
-        th a{
-            color: black;
-            text-decoration: none;
+
+            th a {
+                color: black;
+                text-decoration: none;
+            }
+
+        #searchSbt {
+            display: none;
         }
     </style>
 
@@ -53,7 +61,15 @@
     <nav class="row">
         <ul class="nav nav-pills nav-justified  img-rounded thumbnail">
             <li class="text-center"><strong>ShareBox</strong></li>
-            <li><input type="text" class="form-control" placeholder="Search" /></li>
+            <li>
+                @using (Html.BeginForm("SearchFiles", "File", FormMethod.Post, new {@id="SearchForm", @class = "form-inline" }))
+            {
+                    <input type="text" class="form-control" placeholder="Search" name="searchString"/>
+                    <span class="glyphicon glyphicon-search" onclick="SearchClick()">
+                        <input type="submit" id="searchSbt" />
+                    </span>
+                }
+            </li>
             <li>@Html.ActionLink("Files", "Index", "File")</li>
             <li>@Html.ActionLink("Shared", "SharedList", "File")</li>
             <li>@Html.ActionLink("Account", "Index", "Manager")</li>
@@ -64,6 +80,11 @@
             @RenderBody()
         </div>
     </div>
-
+    <script>
+        function SearchClick()
+        {
+            $("#SearchForm").submit();
+        }
+    </script>
 </body>
 </html>

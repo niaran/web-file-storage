@@ -243,5 +243,19 @@ namespace WebStorage.UI.Controllers
             HttpContext.Response.Cookies.Add(userCookie);
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<ActionResult> SearchFiles(string searchString)
+        {
+            //Проверяем текущего юзера.
+            string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
+            AppUser user = await UserManager.FindByNameAsync(user_name);
+            if (user == null )
+            {
+                return Redirect(Request.UrlReferrer.AbsoluteUri);
+            }
+            ViewBag.SearchString = searchString;
+            return View(_fileManeger.SearchFileForUser(searchString, user));
+        }
     }
 }
