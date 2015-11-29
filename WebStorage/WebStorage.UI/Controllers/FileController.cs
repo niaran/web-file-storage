@@ -227,7 +227,7 @@ namespace WebStorage.UI.Controllers
                     return File(file.Path, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name);
                 else
                 {
-                    string path = _fileManeger.ArchiveTheFolder(file);
+                    string path = _fileManeger.ArchiveTheFolder(file, true);
                     var bytes = System.IO.File.ReadAllBytes(path);
                     System.IO.File.Delete(path);
                     return File(bytes, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name + ".zip");;

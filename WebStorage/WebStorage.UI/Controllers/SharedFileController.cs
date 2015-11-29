@@ -37,7 +37,7 @@ namespace WebStorage.UI.Controllers
                 {
                     ViewBag.Folder = file;
                     ViewBag.RootSharingId = rootSharingId;
-                    return View("SharedFolder", _fileManager.GetFolderContent(file.Id));
+                    return View("SharedFolder", _fileManager.GetFolderContent(file.Id).Where(x => x.Sharing_Atribute != 1));
                 }
             }
             else
@@ -57,7 +57,7 @@ namespace WebStorage.UI.Controllers
                 }
                 else
                 {
-                    string path = _fileManager.ArchiveTheFolder(file);
+                    string path = _fileManager.ArchiveTheFolder(file, false);
                     var bytes = System.IO.File.ReadAllBytes(path);
                     System.IO.File.Delete(path);
                     return File(bytes, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name + ".zip"); ;

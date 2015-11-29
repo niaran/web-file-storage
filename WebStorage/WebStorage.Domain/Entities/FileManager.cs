@@ -186,7 +186,11 @@ namespace WebStorage.Domain.Entities
             }
             try
             {
+                // Если в папке не осталось нерасшаренных файлов - аншарить всю папку
+                if (GetFolderContent(file.ParentId).Where(x => x.Sharing_Atribute != 1).Count() == 1)
+                    await ChangeShareStateSystemFile(1, file.ParentFolder);
                 dbContext.SystemFiles.Remove(file);
+                
                 await dbContext.SaveChangesAsync();
             }
             catch
@@ -311,6 +315,9 @@ namespace WebStorage.Domain.Entities
                 return null;
             }
             await ChangeShareStateSystemFile(shareState, sysFile);
+            // Если в папке не осталось нерасшаренных файлов - аншарить всю папку
+            if (shareState == 1 && GetFolderContent(sysFile.ParentId).Where(x => x.Sharing_Atribute != 1).Count() == 0)
+                await ChangeShareStateSystemFile(1, sysFile.ParentFolder);
 
             if (shareState == (int)ShareType.ShareReadOnly)
             {   //генерируем уникальную ссылку для файла/папки
@@ -348,6 +355,8 @@ namespace WebStorage.Domain.Entities
             if (id != null)
             {
                 file = GetFileById(id.Value);
+                if (file.Sharing_Atribute == 1)
+                    return null;
                 SystemFile f = file;
                 while (f != null)
                 {
@@ -366,12 +375,36 @@ namespace WebStorage.Domain.Entities
             }
         }
 
-        public string ArchiveTheFolder(SystemFile folder)
+        public string ArchiveTheFolder(SystemFile folder, bool owner)
         {
-            string zipPath = folder.Path + ".zip";
-            ZipFile.CreateFromDirectory(folder.Path, zipPath);
+            string path = RebuildFileStructure(folder, folder.Path, GenerateRandomString()+folder.Name, owner);
 
+            string zipPath = folder.Path + ".zip";
+            ZipFile.CreateFromDirectory(path, zipPath);
+            Directory.Delete(path, true);
             return zipPath;
+        }
+
+        public string RebuildFileStructure(SystemFile file, string path, string folderName, bool owner)
+        {
+            path = Path.Combine(path, folderName);
+            Directory.CreateDirectory(path);
+            IQueryable<SystemFile> content = GetFolderContent(file.Id);
+            foreach (SystemFile f in content)
+            {
+                if (owner || f.Sharing_Atribute != 1)
+                {
+                    if (f.IsFile)
+                    {
+                        File.Copy(f.Path, Path.Combine(path, f.Name));
+                    }
+                    else
+                    {
+                        RebuildFileStructure(f, path, f.Name, owner);
+                    }
+                }
+            }
+            return path;
         }
 
         //Ищем файл
