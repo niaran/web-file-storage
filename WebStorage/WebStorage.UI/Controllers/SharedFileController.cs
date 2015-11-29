@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using WebStorage.Domain.Entities;
@@ -27,8 +28,10 @@ namespace WebStorage.UI.Controllers
                     if (contentId != null)
                         throw new UnauthorizedAccessException();
                     else
-                        //Пока нету
-                        return View("share____file", file);
+                    {
+                        ViewBag.Root = rootSharingId;
+                        return View("SharedInfo", file);
+                    }
                 }
                 else
                 {
@@ -54,8 +57,10 @@ namespace WebStorage.UI.Controllers
                 }
                 else
                 {
-                    //TODO: Папку нужно заархивировать. Пока не пашет
-                    return null;//File(file.Path, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name + ".7z");
+                    string path = _fileManager.ArchiveTheFolder(file);
+                    var bytes = System.IO.File.ReadAllBytes(path);
+                    System.IO.File.Delete(path);
+                    return File(bytes, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name + ".zip"); ;
                 }
             }
             else
@@ -63,6 +68,22 @@ namespace WebStorage.UI.Controllers
                 throw new UnauthorizedAccessException();
             }
 
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public ActionResult Info(string rootSharingId, int? contentId)
+        {
+            SystemFile file = _fileManager.AccessSharedFile(rootSharingId, contentId);
+
+            if (file != null)
+            {
+                ViewBag.Root = rootSharingId;
+                return View("SharedInfo", file);
+            }
+            else
+                throw new UnauthorizedAccessException();
+            
         }
 
 

@@ -66,9 +66,6 @@
                 Загружен
             </th>
             <th>
-                Шаринг
-            </th>
-            <th>
                 Формат
             </th>
             <th>
@@ -95,27 +92,13 @@
                     @Html.DisplayFor(modelItem => item.Uploaded)
                 </td>
                 <td>
-                    @if (item.Sharing_Atribute == 1)
-                    {
-                        @:Не расшарен
-                    }
-                    else if (item.Sharing_Atribute == 2)
-                    {
-                        @:Расшарен на чтение
-                    }
-                    else
-                    {
-                        @:Расшарен на редактирование
-                    }
-                </td>
-                <td>
                     @Html.DisplayFor(modelItem => item.Format)
                 </td>
                 <td>
                     @item.SizeAsMemory()
                 </td>
                 <td>
-                    @Html.ActionLink(" ", "Info", new { id = item.Id }, new { @class = "glyphicon glyphicon-info-sign" })
+                    @Html.ActionLink(" ", "Info", new { rootSharingId = ViewBag.RootSharingId, contentId = item.Id }, new { @class = "glyphicon glyphicon-info-sign" })
                     @Html.ActionLink(" ", "Download", new { rootSharingId = ViewBag.RootSharingId, contentId = item.Id }, new { @class = "glyphicon glyphicon-download" })
                 </td>
 
@@ -124,6 +107,10 @@
         }
 
     </table>
+    @if (ViewBag.Folder.Sharing_Id == ViewBag.RootSharingId)
+    {
+        <h4>@Html.ActionLink("Скачать", "Download", "SharedFile", new { rootSharingId = ViewBag.RootSharingId, contentId = ViewBag.Folder.Id }, new { @class = "glyphicon glyphicon-download" })</h4>
+    }
 </body>
 
 </html>

@@ -32,15 +32,16 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Size)
+            @Model.SizeAsMemory()
+            
         </dd>
 
         <dt>
             Формат
         </dt>
-
+            
         <dd>
-            @Model.SizeAsMemory()
+            @Html.DisplayFor(model => model.Format)
         </dd>
 
         <dt>
