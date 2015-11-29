@@ -68,7 +68,7 @@
         <dd>
             @if (Model.Sharing_Id != null)
             {
-                @:/Shared/@Html.DisplayFor(model => model.Sharing_Id)
+                <a href="/Shared/@Model.Sharing_Id">Shared/@Model.Sharing_Id</a>
             }
             else
             {

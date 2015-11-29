@@ -64,9 +64,14 @@
             <li>
                 @using (Html.BeginForm("SearchFiles", "File", FormMethod.Post, new {@id="SearchForm", @class = "form-inline" }))
             {
-                    <input type="text" class="form-control" placeholder="Search" name="searchString"/>
+                    <input type="text" class="form-control" placeholder="Поиск" name="searchString"/>
+                    <input type="hidden" value="@ViewBag.RootSharingId" name="RootSharingId" />
                     <span class="glyphicon glyphicon-search" onclick="SearchClick()">
                         <input type="submit" id="searchSbt" />
+                        @if (ViewBag.Folder != null)
+                        {
+                        <input type="hidden" value="@ViewBag.Folder.Id" name="ParentId" />
+                        }
                     </span>
                 }
             </li>

@@ -133,7 +133,7 @@ namespace WebStorage.UI.Controllers
         [Authorize]
         public async Task<ActionResult> Index(int? folderId)
         {
-            if (Request.Cookies["OrderBy"]!= null)
+            if (Request.Cookies["OrderBy"] != null)
             {
                 _fileManeger.OrderValue = int.Parse(Request.Cookies["OrderBy"].Value);
             }
@@ -230,13 +230,13 @@ namespace WebStorage.UI.Controllers
                     string path = _fileManeger.ArchiveTheFolder(file, true);
                     var bytes = System.IO.File.ReadAllBytes(path);
                     System.IO.File.Delete(path);
-                    return File(bytes, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name + ".zip");;
-                }   
+                    return File(bytes, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name + ".zip"); ;
+                }
             }
             else throw new NullReferenceException();
         }
 
-       
+
         public ActionResult OrderList(int orderBy)
         {
             var userCookie = new HttpCookie("OrderBy", orderBy.ToString());
@@ -245,14 +245,26 @@ namespace WebStorage.UI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> SearchFiles(string searchString)
+        [AllowAnonymous]
+        public async Task<ActionResult> SearchFiles(string searchString, string RootSharingId, int? ParentId)
         {
+            ViewBag.RootSharingId = RootSharingId;
             //Проверяем текущего юзера.
             string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
             AppUser user = await UserManager.FindByNameAsync(user_name);
-            if (user == null )
+            if(user == null)
+            {
+                ViewBag.Auth = "noUser";
+            }
+
+            if (user == null && ParentId == null && RootSharingId == null)
             {
                 return Redirect(Request.UrlReferrer.AbsoluteUri);
+            }
+            else if (ParentId != null)
+            {
+                ViewBag.SearchString = searchString;
+                return View(_fileManeger.SearchFileInParentFolder(searchString, (int)ParentId));
             }
             ViewBag.SearchString = searchString;
             return View(_fileManeger.SearchFileForUser(searchString, user));
