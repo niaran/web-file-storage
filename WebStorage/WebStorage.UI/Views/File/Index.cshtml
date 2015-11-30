@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width" />
     <script type="text/javascript" src="~/Scripts/jquery-2.1.4.js"></script>
     <script type="text/javascript" src="~/Scripts/rightClickMenu.js"></script>
+    <script src="http://malsup.github.com/jquery.form.js"></script>
     <link href="~/Content/File.css" type="text/css" rel="stylesheet" />
 
 </head>
@@ -52,17 +53,22 @@
             Загрузка файлов
             @using (Html.BeginForm("Create", "File", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-inline" }))
             {
-                <script src="~/Scripts/NoLargeFiles.js"></script>
+
                 <span id="uploadErr" hidden>Ограничение на размер загружаемого файла - 100Mb</span>
                 <br />
                 <input class="form-control  " type="file" name="uploadedFile" id="uploadedFile" multiple onchange="sizeCheck()" />
                 <input class="form-control" type="submit" value="Загрузить" />
-
+                <div class="progress center-block">
+                    <div class="progress-bar">0%</div>
+                </div>
                 if (ViewBag.Folder != null)
                 {
                     <input type="hidden" value="@ViewBag.Folder.Id" name="ParentId" />
                 }
+                
             }
+            <script src="~/Scripts/uploadScripts.js"></script>
+            
         </div>
         <div id="folderUpload" class="row text-center">
             Загрузка папки
@@ -70,10 +76,14 @@
             {
                 <input class="form-control" type="file" name="uploadedDir" id="uploadedDir" webkitdirectory directory multiple />
                 <input class="form-control" type="submit" value="Загрузить" />
+                <div class="progress center-block">
+                    <div class="progress-bar">0%</div>
+                </div>
                 if (ViewBag.Folder != null)
                 {
                     <input type="hidden" value="@ViewBag.Folder.Id" name="ParentId" />
                 }
+                <script src="~/Scripts/uploadScripts.js"></script>
             }
         </div>
         <div id="folderCreate" class="row text-center">
