@@ -425,6 +425,20 @@ namespace WebStorage.Domain.Entities
         {
             return SearchFile(_searchEx).Where(f => f.ParentId == parentFolderId).ToList();
         }
+
+        public async Task<bool> EditFileName(SystemFile file, string newName)
+        {
+            file.Name = newName;
+            try
+            {
+                await dbContext.SaveChangesAsync();
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
     }
 
     public enum OrderType

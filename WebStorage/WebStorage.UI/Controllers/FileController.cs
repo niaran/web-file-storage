@@ -236,7 +236,7 @@ namespace WebStorage.UI.Controllers
             else throw new NullReferenceException();
         }
 
-
+        [Authorize]
         public ActionResult OrderList(int orderBy)
         {
             var userCookie = new HttpCookie("OrderBy", orderBy.ToString());
@@ -268,6 +268,22 @@ namespace WebStorage.UI.Controllers
             }
             ViewBag.SearchString = searchString;
             return View(_fileManeger.SearchFileForUser(searchString, user));
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<ActionResult> EditFileName(string fileName, int fileId)
+        {
+            SystemFile file = _fileManeger.GetFile(fileId);
+            //Проверяем текущего юзера на владение папки.
+            string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
+            AppUser user = await UserManager.FindByNameAsync(user_name);
+            if (user == null ||file == null || file.OwnerId != user.Id)
+            {
+                return Redirect(Request.UrlReferrer.AbsoluteUri);
+            }
+            await _fileManeger.EditFileName(file, fileName);
+            return Redirect(Request.UrlReferrer.AbsoluteUri);
         }
     }
 }

@@ -12,7 +12,15 @@
     <script type="text/javascript" src="~/Scripts/rightClickMenu.js"></script>
     <script src="http://malsup.github.com/jquery.form.js"></script>
     <link href="~/Content/File.css" type="text/css" rel="stylesheet" />
+    <style>
+        .hiddenSubmit, .hiddenTextBox {
+            display: none;
+        }
 
+        td .glyphicon-folder-open:hover, td .glyphicon-file:hover {
+            color: orange;
+        }
+    </style>
 </head>
 
 <body>
@@ -102,19 +110,19 @@
     </div>
     <table class="table table-bordered table-hover table-condense">
         <tr>
-            <th >
+            <th>
                 @Html.ActionLink("Имя", "OrderList", new { @orderBy = 2 })
             </th>
-            <th >
-                @Html.ActionLink("Загружен", "OrderList", new { @orderBy = 1})
+            <th>
+                @Html.ActionLink("Загружен", "OrderList", new { @orderBy = 1 })
             </th>
-            <th >
+            <th>
                 @Html.ActionLink("Шаринг", "OrderList", new { @orderBy = 3 })
             </th>
             <th>
                 @Html.ActionLink("Формат", "OrderList", new { @orderBy = 4 })
             </th>
-            <th >
+            <th>
                 @Html.ActionLink("Размер", "OrderList", new { @orderBy = 5 })
             </th>
             <th></th>
@@ -122,17 +130,26 @@
 
         @foreach (var item in Model)
         {
-            <tr @if (!item.IsFile) { <text> onclick="window.location.href = '@Url.Action("Index", "File", new { folderId = item.Id })'" </text>                   }>
-                <td>
-                    @if (item.IsFile)
+            <tr>
+                <td class="fileName" onselectstart="return false">
+
+                    @using (@Html.BeginForm("EditFileName", "File", FormMethod.Post, new { @class = "formTextEdit form-inline" }))
                     {
-                        <span class="glyphicon glyphicon-file"></span>
+                        <span class="nameText">
+                            @if (item.IsFile)
+                            {
+                                <span class="glyphicon glyphicon-file"></span>
+                            }
+                            else
+                            {
+                                <span class="glyphicon glyphicon-folder-open" onclick="window.location.href = '@Url.Action("Index", "File", new { folderId = item.Id })'"></span>
+                            }
+                            <span class="spcName">@Html.DisplayFor(modelItem => item.Name)</span>
+                        </span>
+                        <input class="hiddenTextBox" name="fileName" type="text" value="@item.Name" />
+                        <input name="fileId" type="hidden" value="@item.Id" />
+                        <input class="hiddenSubmit" type="submit" />
                     }
-                    else
-                    {
-                        <span class="glyphicon glyphicon-folder-open"></span>
-                    }
-                    @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Uploaded)
@@ -174,6 +191,7 @@
 
     </table>
     <script>
+        //код для работы меню загрузки файла, загрузки папки, добавления папки.
         var singleFileUploadValue = "none";
         var folderUploadValue = "none";
         var folderCreateValue = "none";
@@ -227,6 +245,27 @@
             }
         }
 
+        //код для переименования файлов и папок
+        var prevElem = null;
+        $(".fileName").bind("dblclick", function () {
+            if (prevElem !== null) {
+                $(prevElem).find(".hiddenTextBox").css("display", "none");
+                $(prevElem).find(".nameText").css("display", "block");
+                if (prevElem === this) {
+                    prevElem = null;
+                    return;
+                }
+            }
+            prevElem = this;
+            var htb = $(this).find(".hiddenTextBox");
+            var nt = $(this).find(".nameText");
+
+            htb.val($(this).find(".spcName").html());
+
+            htb.css("display", "block");
+            htb.focus().select();
+            nt.css("display", "none");
+        });
     </script>
 </body>
 
