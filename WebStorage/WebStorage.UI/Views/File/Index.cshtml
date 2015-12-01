@@ -73,10 +73,10 @@
                 {
                     <input type="hidden" value="@ViewBag.Folder.Id" name="ParentId" />
                 }
-                
+
             }
             <script src="~/Scripts/uploadScripts.js"></script>
-            
+
         </div>
         <div id="folderUpload" class="row text-center">
             Загрузка папки
@@ -161,7 +161,14 @@
                     }
                     else if (item.Sharing_Atribute == 2)
                     {
-                        <a href="/Shared/@item.Sharing_Id">Shared/@item.Sharing_Id</a>
+                        if (item.Sharing_Id != null)
+                        {
+                            <a href="/Shared/@item.Sharing_Id">Shared/@item.Sharing_Id</a>
+                        }
+                        else
+                        {
+                            @:Расшарен внутри папки
+                        }
                     }
                 </td>
                 <td>

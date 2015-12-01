@@ -69,6 +69,8 @@ namespace WebStorage.Domain.Entities
             if (ParentElement != null)
             {
                 sysFile.ParentId = ParentElement.Id;
+                sysFile.Sharing_Atribute = ParentElement.Sharing_Atribute;
+                
             }
 
             //Сохраняем файл в БД первоначально, дабы ему дался айдишник. 
