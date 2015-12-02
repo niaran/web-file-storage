@@ -61,10 +61,9 @@
             Загрузка файлов
             @using (Html.BeginForm("Create", "File", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-inline" }))
             {
-
-                <span id="uploadErr" hidden>Ограничение на размер загружаемого файла - 100Mb</span>
+                <span id="uploadErr" hidden>Загрузка отменена. Один из загружаемых файлов по размеру превышает 100Mb</span>
                 <br />
-                <input class="form-control  " type="file" name="uploadedFile" id="uploadedFile" multiple onchange="sizeCheck()" />
+                <input class="form-control  " type="file" name="uploadedFile" id="uploadedFile" multiple />
                 <input class="form-control" type="submit" value="Загрузить" />
                 <div class="progress center-block">
                     <div class="progress-bar">0%</div>
@@ -82,6 +81,8 @@
             Загрузка папки
             @using (Html.BeginForm("Create", "File", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-inline" }))
             {
+                <span id="uploadErr" hidden>Загрузка отменена. Один из загружаемых файлов по размеру превышает 100Mb</span>
+                <br />
                 <input class="form-control" type="file" name="uploadedDir" id="uploadedDir" webkitdirectory directory multiple />
                 <input class="form-control" type="submit" value="Загрузить" />
                 <div class="progress center-block">
@@ -189,7 +190,15 @@
                         @Html.ActionLink(" ", "ShareOwnerOnly", new { id = item.Id }, new { @class = "glyphicon glyphicon-check" })
                     }
                     @Html.ActionLink(" ", "Info", new { id = item.Id }, new { @class = "glyphicon glyphicon-info-sign" })
-                    @Html.ActionLink(" ", "Download", new { Id = item.Id }, new { @class = "glyphicon glyphicon-download" })
+                    @if (item.Size <= 104857600)
+                    {
+                        @Html.ActionLink(" ", "Download", new { Id = item.Id }, new { @class = "glyphicon glyphicon-download" })
+                    }
+                    else
+                    {
+                        <span title="Загрузка папок более 100Mb одним архивом запрещена" style="color:red" class="glyphicon glyphicon-download"></span>
+                    }
+
                 </td>
 
             </tr>
@@ -215,6 +224,7 @@
                 singleFileUploadValue = "block";
             }
             else {
+                $("#uploadedFile").replaceWith($("#uploadedFile").clone());
                 $("#singleFileUpload").css("display", "none");
                 singleFileUploadValue = "none";
             }
@@ -231,6 +241,7 @@
                 folderUploadValue = "block";
             }
             else {
+                $("#uploadedDir").replaceWith($("#uploadedDir").clone());
                 $("#folderUpload").css("display", "none");
                 folderUploadValue = "none";
             }

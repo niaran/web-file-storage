@@ -51,6 +51,8 @@ namespace WebStorage.UI.Controllers
             SystemFile file = _fileManager.AccessSharedFile(rootSharingId, contentId);
             if (file != null)
             {
+                if (file.Size > 104857600)
+                    return null;
                 if (file.IsFile)
                 {
                     return File(file.Path, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name);

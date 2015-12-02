@@ -77,7 +77,15 @@
         </dd>
 
     </dl>
-    <h4>@Html.ActionLink("Скачать", "Download", new { Id = Model.Id }, new { @class = "glyphicon glyphicon-download" })</h4>
+    @if (Model.Size <= 104857600)
+    {
+        <h4>@Html.ActionLink("Скачать", "Download", new { Id = Model.Id }, new { @class = "glyphicon glyphicon-download" })</h4>
+    }
+    else
+    {
+        <h4 title="Загрузка папок более 100Mb одним архивом запрещена" style="color:red" class="glyphicon glyphicon-download">Скачать</h4>
+    }
+
     <h4>@Html.ActionLink("Удалить", "Delete", new { id = Model.Id }, new { @class = "glyphicon glyphicon-trash" })</h4>
 
 
