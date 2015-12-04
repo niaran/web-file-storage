@@ -106,7 +106,14 @@
     </table>
     @if (ViewBag.Folder.Sharing_Id == ViewBag.RootSharingId)
     {
-        <h4>@Html.ActionLink("Скачать", "Download", "SharedFile", new { rootSharingId = ViewBag.RootSharingId, contentId = ViewBag.Folder.Id }, new { @class = "glyphicon glyphicon-download" })</h4>
+        if (ViewBag.Folder.Size <= 104857600)
+        {
+            <h4>@Html.ActionLink("Скачать", "Download", "SharedFile", new { rootSharingId = ViewBag.RootSharingId, contentId = ViewBag.Folder.Id }, new { @class = "glyphicon glyphicon-download" })</h4>
+        }
+        else
+        {
+            <h4 title="Загрузка папок более 100Mb одним архивом запрещена" style="color:red" class="glyphicon glyphicon-download">Скачать</h4>
+        }
     }
 </body>
 

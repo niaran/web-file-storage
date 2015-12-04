@@ -41,8 +41,10 @@ $(document).on('change', '#uploadedDir', sizeCheck);
                 var percentValue = '100%';
                 bar.width(percentValue);
                 percent.html(percentValue);
-                location.reload();
             }
+        },
+        complete: function (xhr) {
+            $("body").html(xhr.responseText);
         }
     });
 })();
