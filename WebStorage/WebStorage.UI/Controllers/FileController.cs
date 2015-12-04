@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using WebStorage.Domain.Concrete;
 using WebStorage.Domain.Entities;
+using WebStorage.UI.Models;
 
 namespace WebStorage.UI.Controllers
 {
@@ -152,6 +153,7 @@ namespace WebStorage.UI.Controllers
             if (folder.Owner.UserName != HttpContext.User.Identity.Name)
                 throw new UnauthorizedAccessException();
             ViewBag.Folder = folder;
+            ViewBag.UserID = UserManager.FindByName(HttpContext.User.Identity.Name);
             return View(_fileManeger.GetFolderContentWithUser(folderId, user));
         }
 
@@ -288,5 +290,126 @@ namespace WebStorage.UI.Controllers
             await _fileManeger.EditFileName(file, fileName);
             return Redirect(Request.UrlReferrer.AbsoluteUri);
         }
+#region ///////////////////// .doc /////////////////////
+
+        [Authorize]
+        [HttpPost]
+        public async Task<ActionResult> CreateDocFile(String name, Int32? ParentId)
+        {
+            WebStorageDoc model;
+            try
+            {
+                model = await WorkWithDocFile(name, ParentId, String.Empty);
+            }
+            catch
+            {
+                return View("EditError",
+                    "Have some problem with file. Please close the tab and try again later.");
+            }            
+            return View("EditDocFile", model);
+        }
+
+        [Authorize]
+        public ActionResult EditDocFile(Int32 Id)
+        {
+            SystemFile file = _fileManeger.GetFileById(Id);
+            WebStorageDoc model = new WebStorageDoc() { FileName = file.Name, ParentId = file.ParentId };
+            try
+            {
+                model.EditorContent = model.ReadDocFile(file.Path);
+            }
+            catch
+            {
+                return View("EditError",
+                    "Have some problem with file. Please close the tab and try again later.");
+            }
+
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<ActionResult> EditDocFile(WebStorageDoc model)
+        {
+            WebStorageDoc new_model;
+            try
+            {
+                new_model = await WorkWithDocFile(model.FileName, model.ParentId, model.EditorContent);
+            }
+            catch
+            {
+                return View("EditError",
+                    "Have some problem with file. Please close the tab and try again later.");
+            }
+            return View(new_model);
+        }
+
+        private async Task<WebStorageDoc> WorkWithDocFile(String name, Int32? ParentId, String content)
+        {
+            ////////////// Find user //////////////
+            String user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
+            AppUser user = UserManager.FindByName(user_name);
+
+            ////////////// Additional Info instances //////////////
+            String _pathToParentFolder;
+            SystemFile ParentFolder;
+
+            ////////////// Get additional Info //////////////           
+            if (!ParentId.HasValue)
+            {
+                _pathToParentFolder = user.PathToMainFolder;
+                ParentFolder = null;
+            }
+            else
+            {
+                _pathToParentFolder = _fileManeger.GetFileById(ParentId.Value).Path;
+                ParentFolder = _fileManeger.GetFileById(ParentId.Value);
+            }
+
+            ////////////// ViewModel and SystemFile instances //////////////
+            WebStorageDoc model = new WebStorageDoc();
+            SystemFile _file = _fileManeger.GetFolderContent(ParentId).ToList<SystemFile>().FirstOrDefault(o => o.Name == name);
+
+            ////////////// Fill ViewModel //////////////
+            if (_file == null)
+            {
+                ////////////// Create temp file //////////////
+                System.IO.File.Create(Path.Combine(_pathToParentFolder, name + ".boxdoc")).Close();
+
+                FileInfo _info = null;
+                DirectoryInfo _di = new DirectoryInfo(_pathToParentFolder);
+
+                ////////////// Get info about temp file //////////////
+                foreach (FileInfo _finfo in _di.GetFiles("*.boxdoc"))
+                {
+                    if (_finfo.Name == name + ".boxdoc")
+                    {
+                        _info = _finfo;
+                    }
+                }
+
+                ////////////// Create new path for temp file //////////////
+                String savepath = await _fileManeger.SaveSingleFile(_info, user, ParentFolder, _info.Length);
+
+                ////////////// Fill ViewModel //////////////
+                model.WriteToDocFile(savepath, content);
+                model.EditorContent = model.ReadDocFile(savepath);
+                model.ParentId = ParentId;
+                model.FileName = name + ".boxdoc"; //savepath.Split('\\').Last()
+
+                ////////////// Delete temp file //////////////
+                System.IO.File.Delete(_info.FullName);
+            }
+            else
+            {
+                ////////////// Fill ViewModel //////////////
+                model.WriteToDocFile(_file.Path, content);
+                model.EditorContent = model.ReadDocFile(_file.Path);
+                model.ParentId = ParentId;
+                model.FileName = name;
+            }            
+            return model;
+        }        
+        #endregion
     }
 }

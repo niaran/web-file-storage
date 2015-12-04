@@ -10,7 +10,14 @@ namespace WebStorage.Domain.Entities
 {
     public class SystemFile
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        /*
+        Если использовать наследование и атрибут DatabaseGenerated(DatabaseGeneratedOption.Identity).
+        Первое. В качестве типа ключа используется int, а не Guid. 
+        Будут проблемы с ключами. Необходима ручная установкой Id при создании объекта.
+        Второе. При настройке сопоставления моделей и таблиц у каждой модели должен вызыватся метод MapInheritedProperties(), 
+        который указывает Entity Frameworkу, что надо переопределить связи между моделями при наследовании.
+        */
+        //[Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required]

@@ -7,6 +7,7 @@
     <link href="~/Content/bootstrap-social.css" rel="stylesheet" />
     <link href="~/Content/font-awesome.css" rel="stylesheet" />
     <link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <style>
         .container {
             padding-top: 10px;
@@ -71,8 +72,8 @@
 
 </head>
 <body class="container">
-    <nav class="row">
-        <ul class="nav nav-pills nav-justified  img-rounded thumbnail">
+    <nav class="row" >
+        <ul class="nav nav-pills nav-justified  img-rounded thumbnail" style="background-color:aqua">
             <li class="text-center"><strong>ShareBox</strong></li>
             <li>
                 @using (Html.BeginForm("SearchFiles", "File", FormMethod.Post, new {@id="SearchForm", @class = "form-inline" }))
@@ -88,9 +89,13 @@
                     </span>
                 }
             </li>
-            <li>@Html.ActionLink("Files", "Index", "File")</li>
-            <li>@Html.ActionLink("Shared", "SharedList", "File")</li>
-            <li>@Html.ActionLink("Account", "Index", "Manager")</li>
+            @*<li>@Html.ActionLink("Files", "Index", "File")</li>*@
+            <li title="Shared files"><a href='@(Url.Action("SharedLis", "File"))'><i class="fa fa-users fa-lg"></i></a></li>
+            @*@Html.ActionLink("Shared", "SharedList", "File")*@
+            @*<li>@Html.ActionLink("Account", "Edit", "Manager")</li>*@
+            <li title="Edit account"><a href='@(Url.Action("Edit", "Manager"))'><i class="fa fa-pencil fa-lg"></i><i class="fa fa-user fa-lg"></i></a></li>
+            <li title="Log out"><a href='@(Url.Action("Logout", "Account"))'><i class="fa fa-sign-out fa-lg"></i></a></li>
+            @*@Html.ActionLink("Log out", "Logout", "Account")*@
         </ul>
     </nav>
     <div class="row">

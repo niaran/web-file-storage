@@ -32,6 +32,8 @@ namespace WebStorage.Domain.Concrete
 
             base.OnModelCreating(modelBuilder);
         }
+
+        
     }
 
     // Класс, кот можно использовать для разнообразных настроек 

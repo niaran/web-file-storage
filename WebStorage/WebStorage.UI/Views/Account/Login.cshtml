@@ -1,67 +1,79 @@
 ﻿@model WebStorage.UI.Models.LoginModel
 @using Microsoft.Owin.Security
 
-@{ ViewBag.Title = "Login";}
-
-@{ 
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_LayoutAccount.cshtml";
+}
+@{
     Dictionary<String, String> templForBtn = new Dictionary<string, string>()
     {
-        ["github"]= "github",
+        ["github"] = "github",
         ["twitter"] = "twitter",
         ["facebook"] = "facebook",
         ["linkedin"] = "linkedin"
     };
 }
-
-<h2>Log In</h2>
-
 @if (TempData["loginmessage"] != null)
 {
     <div class="alert alert-info">@TempData["loginmessage"]</div>
 }
 
-@Html.ValidationSummary()
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-    <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
-    <div class="form-group">
-        <label>Name</label>
-        @Html.TextBoxFor(x => x.Name, new { @class = "form-control", placeholder = "Please, enter your user name" })
-    </div>
-    <div class="form-group">
-        <label>Password</label>
-        @Html.PasswordFor(x => x.Password, new { @class= "form-control", placeholder = "Please, enter your password" })        
-    </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <div class="checkbox">
-                @Html.CheckBoxFor(m => m.remember)
-                @Html.LabelFor(m => m.remember)
+<div class="logform">
+
+    @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(m => m.Name, new { @class = "col-md-2 control-label", style = "color:white" })
+            <div class="col-md-4">
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Please, enter your user name" })
+                @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
             </div>
         </div>
-    </div>
-    <button class="btn btn-default" type="submit">Log In</button>
-    @Html.ActionLink("Create account", "Create", "Manager")
-}
+            <div class="form-group">
+                @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label", style = "color:white" })
+                <div class="col-md-4">
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Please, enter your password" })
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-4">
+                    @Html.CheckBoxFor(m => m.remember)
+                    @Html.LabelFor(m => m.remember, "Remember me", new { style = "color:white" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Log in" class="btn btn-info" />
+                    @Html.ActionLink("Create account", "Create","Manager", null, new { style = "color:white" })
+                </div>
+            </div>
+    }
 
-@{
-    var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
-    foreach (var p in loginProviders)
-    {
-        using (Html.BeginForm("ExtLogin", "Account"))
-        {
-            string templ = p.AuthenticationType.ToLowerInvariant();
-            if (templForBtn.ContainsKey(templ))
+    <div class="col-md-offset-2 col-md-10">
+        @{
+            var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+            foreach (var p in loginProviders)
             {
-                @Html.AntiForgeryToken()
-                <button class="btn btn-social-icon btn-@templForBtn[templ]" type="submit" name="provider" value="@p.AuthenticationType">
-                    <span class="fa fa-@templForBtn[templ]"></span>
-                </button>
+                <div class="form-container">
+                    @using (Html.BeginForm("ExtLogin", "Account"))
+                    {
+                        string templ = p.AuthenticationType.ToLowerInvariant();
+                        if (templForBtn.ContainsKey(templ))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-social-icon btn-@templForBtn[templ]" type="submit" name="provider" value="@p.AuthenticationType">
+                                <span class="fa fa-@templForBtn[templ]"></span>
+                            </button>
+                        }
+                    }
+                </div>
             }
         }
-    }
-}
-
+    </div>
+</div>
 
 

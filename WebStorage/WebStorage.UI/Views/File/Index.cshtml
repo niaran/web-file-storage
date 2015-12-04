@@ -11,6 +11,8 @@
     <script type="text/javascript" src="~/Scripts/jquery-2.1.4.js"></script>
     <script type="text/javascript" src="~/Scripts/rightClickMenu.js"></script>
     <script src="http://malsup.github.com/jquery.form.js"></script>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <script src="~/Scripts/bootstrap.min.js"></script>    
     <link href="~/Content/File.css" type="text/css" rel="stylesheet" />
     <style>
         .hiddenSubmit, .hiddenTextBox {
@@ -20,24 +22,74 @@
         td .glyphicon-folder-open:hover, td .glyphicon-file:hover {
             color: orange;
         }
+        .modal-header, .close {
+            background-color:blue;
+            color: white !important;
+            text-align: center;
+            font-size: 30px;
+        }
+        .modal-body{
+            background-color:chartreuse;
+        }
+        .modal-footer {
+            background-color:yellow;
+        }
+        a.glyphicon-trash, a.glyphicon-share, a.glyphicon-info-sign, a.glyphicon-download, a.glyphicon-edit {
+           font-size: 1.2em;
+           color:black;
+        }
     </style>
 </head>
 
 <body>
+    @using (Html.BeginForm("CreateDocFile", "File"))
+    {
+    <!--Modal-->
+    <div id = "docMod" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Create .boxdoc</h4>
+                </div>
+                <div class="modal-body">
+                    <form role="form">
+                        <label for="docfile">File name:</label>
+                        <div class="input-group">                            
+                            <input type="text" class="form-control" id="docName" aria-describedby="basic-addon" name="name" placeholder="Enter file name">
+                            <span class="input-group-addon" id="basic-addon">.boxdoc</span>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer" style="margin-top:unset">
+                    @if (ViewBag.Folder != null)
+                    {
+                        <input type="hidden" value="@ViewBag.Folder.Id" name="ParentId" />
+                    }
+                    <button class="btn btn-info" id="crtBtn" type="submit" formtarget="_blank">Create</button>
+                    <button id="Btn" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+
     <div class="row ">
         <div class="col-lg-1 UpButton">
             @if (ViewBag.Folder != null)
-            {
-                @Html.ActionLink(" ", "Index", new { folderId = ViewBag.Folder.ParentId }, new { @class = "glyphicon glyphicon-level-up  " })
+        {
+            @Html.ActionLink(" ", "Index", new { folderId = ViewBag.Folder.ParentId }, new { @class = "glyphicon glyphicon-level-up  " })
             }
         </div>
         <div class="col-lg-6 UpButton">
             @if (ViewBag.Folder != null)
-            {
+        {
                 <strong> @ViewBag.Folder.Name</strong>
             }
         </div>
-        <button onclick="forSingleFileForm()" class="btn btn-default col-lg-1 col-lg-offset-2">
+        <button onclick="forSingleFileForm()" class="btn btn-default col-lg-1 col-lg-offset-1">
             <span class="glyphicon glyphicon-file">
             </span>
             <span class="glyphicon glyphicon-upload">
@@ -54,6 +106,10 @@
             </span>
             <span class="glyphicon glyphicon-plus">
             </span>
+        </button>
+        <button class="btn btn-default col-lg-1" id="docBtn" style="background-color:coral" title="Create new .boxdoc">
+            <i class="glyphicon glyphicon-file"></i>
+            <i class="glyphicon glyphicon-plus"></i>
         </button>
     </div>
     <div class="row edit-menu">
@@ -130,7 +186,7 @@
         </tr>
 
         @foreach (var item in Model)
-        {
+    {
             <tr>
                 <td class="fileName" onselectstart="return false">
 
@@ -160,7 +216,7 @@
                 </td>
                 <td>
                     @if (item.Sharing_Atribute == 1)
-                    {
+    {
                         @:Не расшарен
                     }
                     else if (item.Sharing_Atribute == 2)
@@ -178,7 +234,7 @@
                 <td>
                     @item.SizeAsMemory()
                 </td>
-                <td>
+                <td valign="middle" align="center">
 
                     @Html.ActionLink(" ", "Delete", new { id = item.Id }, new { @class = "glyphicon glyphicon-trash" })
                     @if (item.Sharing_Atribute == 1)
@@ -199,15 +255,42 @@
                         <span title="Загрузка папок более 100Mb одним архивом запрещена" style="color:red" class="glyphicon glyphicon-download"></span>
                     }
 
+                    @if (item.Format == ".boxdoc")
+                    {
+                        @Html.ActionLink(" ", "EditDocFile", new { Id = item.Id }, new { @class = "glyphicon glyphicon-edit", target = "_blank", title = "Edit boxdoc file" })
+                    }
                 </td>
 
             </tr>
-
         }
 
     </table>
     <script>
-        //код для работы меню загрузки файла, загрузки папки, добавления папки.
+
+        $("#docName").keyup(function () {
+            var empty = false;
+            $("#docName").each(function () {
+                if ($(this).val().length == 0 || !$(this).val().trim())
+                    empty = true;
+            });
+            if (empty) {
+                $("#crtBtn").attr("disabled", true);
+            } else {
+                $("#crtBtn").attr("disabled", false);
+            }
+        });
+
+        $("#docBtn").click(function () {
+            $("#docMod").modal();
+            if (!$("#docName").val().trim())
+                $("#crtBtn").attr("disabled", true);
+        });
+        $("#crtBtn").click(function () {           
+            $("#docMod").modal('hide');
+            $('#docMod').on('hidden.bs.modal', function () {
+                window.location.reload();
+            });
+        });        
         var singleFileUploadValue = "none";
         var folderUploadValue = "none";
         var folderCreateValue = "none";

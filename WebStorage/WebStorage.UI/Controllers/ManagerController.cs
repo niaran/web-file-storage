@@ -36,10 +36,10 @@ namespace WebStorage.UI.Controllers
         Также необходимо будет исправить в дальнейшем некоторые 
         перенаправления к представлениям.
         */
-        public ActionResult Index()
-        {
-            return View(UserManager.Users);
-        }
+        //public ActionResult Index()
+        //{
+        //    return View(UserManager.Users);
+        //}
 
         #region /////////////////////////////// Create user section ///////////////////////////////
 
@@ -48,6 +48,7 @@ namespace WebStorage.UI.Controllers
         /// </summary>
         /// <returns></returns>
         // Создать пользователя
+        [AllowAnonymous]
         public ActionResult Create()
         {
             return View();
@@ -64,7 +65,7 @@ namespace WebStorage.UI.Controllers
         {
             if (ModelState.IsValid)
             {
-                // создаем переменную пользователя типа AppUser
+                // создаем переменную типа AppUser
                 AppUser _user = new AppUser() { UserName = user.Name, Email = user.Email };
                 // Сохраняем в базу
                 IdentityResult _result = await UserManager.CreateAsync(_user, user.Password);
@@ -74,11 +75,7 @@ namespace WebStorage.UI.Controllers
                     _user.CreateMainFolder();
                     // Сохраняем это
                     IdentityResult _res = await UserManager.UpdateAsync(_user);
-                    if (!_res.Succeeded)
-                    {
-                        return View(user);
-                    }
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index", "File");
                 }
                 else
                 {
@@ -105,7 +102,7 @@ namespace WebStorage.UI.Controllers
                 IdentityResult _result = await UserManager.DeleteAsync(_user);
                 if (_result.Succeeded)
                 {
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Login", "Account");
                 }
                 else
                 {
@@ -125,16 +122,17 @@ namespace WebStorage.UI.Controllers
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public async Task<ActionResult> Edit(String Id)
+        public async Task<ActionResult> Edit()
         {
-            AppUser _user = await UserManager.FindByIdAsync(Id);
+            AppUser _user = await UserManager.FindByNameAsync(HttpContext.User.Identity.Name);
+
             if (_user != null)
             {
                 return View(_user);
             }
             else
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "File");
             }
         }
 
@@ -181,7 +179,7 @@ namespace WebStorage.UI.Controllers
                     IdentityResult _result = await UserManager.UpdateAsync(_user);
                     if (_result.Succeeded)
                     {
-                        return RedirectToAction("Index");
+                        return RedirectToAction("Index", "File");
                     }
                     else
                     {

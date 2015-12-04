@@ -93,7 +93,7 @@ namespace WebStorage.UI.Controllers
                     SignInStatus result = await SignInManager.PasswordSignInAsync(details.Name, details.Password, details.remember, shouldLockout: false);
                     if (result == SignInStatus.Success)
                     {
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Index", "File");
                     }
                     ModelState.AddModelError("", "You dont have access.");
                 }                
@@ -137,7 +137,7 @@ namespace WebStorage.UI.Controllers
             {
                 case SignInStatus.Success:
                     // Перенаправляем пользователя на стартовую страницу проекта если у него есть аккаунт
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "File");
                 case SignInStatus.Failure:
                 default:
                     // Если у пользователя нет аккаунта просим создать его
@@ -178,7 +178,7 @@ namespace WebStorage.UI.Controllers
                     if (result.Succeeded)
                     {
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Index", "File");
                     }
                     AddErrors(result);
                 }
@@ -201,7 +201,7 @@ namespace WebStorage.UI.Controllers
         {
             //SignInManager.AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie); // или
             AuthManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Account");
         }
         #endregion
         
