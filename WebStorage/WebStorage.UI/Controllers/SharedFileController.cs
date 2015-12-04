@@ -55,7 +55,7 @@ namespace WebStorage.UI.Controllers
                     return null;
                 if (file.IsFile)
                 {
-                    return File(file.Path, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name);
+                    return File(file.Path, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name+file.Format);
                 }
                 else
                 {

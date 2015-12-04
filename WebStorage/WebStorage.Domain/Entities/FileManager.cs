@@ -54,7 +54,7 @@ namespace WebStorage.Domain.Entities
 
             //Создаем и заполняем обьект файла
             SystemFile sysFile = new SystemFile();
-            sysFile.Name = fileInfo.Name;
+            sysFile.Name = Path.GetFileNameWithoutExtension(fileInfo.Name);
             sysFile.Uploaded = DateTime.Now;
             sysFile.OwnerId = user.Id;
             sysFile.Path = path;
@@ -78,7 +78,7 @@ namespace WebStorage.Domain.Entities
             await dbContext.SaveChangesAsync();
 
             //Меняем путь, теперь добавлем Id. И пересохраняем. 
-            sysFile.Path = sysFile.Path + sysFile.Id.ToString() + sysFile.Name;
+            sysFile.Path = sysFile.Path + sysFile.Id.ToString() + sysFile.Name + sysFile.Format;
             await dbContext.SaveChangesAsync();
 
             //Возвращаем путь к нему, для заливки в файловую систему
@@ -398,7 +398,7 @@ namespace WebStorage.Domain.Entities
                 {
                     if (f.IsFile)
                     {
-                        File.Copy(f.Path, Path.Combine(path, f.Name));
+                        File.Copy(f.Path, Path.Combine(path, f.Name + f.Format));
                     }
                     else
                     {

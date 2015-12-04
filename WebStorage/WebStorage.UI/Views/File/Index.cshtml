@@ -115,13 +115,13 @@
                 @Html.ActionLink("Имя", "OrderList", new { @orderBy = 2 })
             </th>
             <th>
+                @Html.ActionLink("Формат", "OrderList", new { @orderBy = 4 })
+            </th>
+            <th>
                 @Html.ActionLink("Загружен", "OrderList", new { @orderBy = 1 })
             </th>
             <th>
                 @Html.ActionLink("Шаринг", "OrderList", new { @orderBy = 3 })
-            </th>
-            <th>
-                @Html.ActionLink("Формат", "OrderList", new { @orderBy = 4 })
             </th>
             <th>
                 @Html.ActionLink("Размер", "OrderList", new { @orderBy = 5 })
@@ -153,6 +153,9 @@
                     }
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.Format)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.Uploaded)
                 </td>
                 <td>
@@ -171,9 +174,6 @@
                             @:Расшарен внутри папки
                         }
                     }
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Format)
                 </td>
                 <td>
                     @item.SizeAsMemory()

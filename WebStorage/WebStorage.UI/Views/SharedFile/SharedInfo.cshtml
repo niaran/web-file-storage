@@ -22,7 +22,12 @@
         <dd>
             @Html.DisplayFor(model => model.Name)
         </dd>
-
+        <dt>
+            Формат
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Format)
+        </dd>
         <dt>
             Дата загрузки
         </dt>
@@ -39,13 +44,7 @@
             @Model.SizeAsMemory()
         </dd>
 
-        <dt>
-            Формат
-        </dt>
-           
-        <dd>
-            @Html.DisplayFor(model => model.Format)
-        </dd>
+        
     </dl>
     @if (Model.Size <= 104857600)
     {

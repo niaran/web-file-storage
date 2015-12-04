@@ -18,6 +18,13 @@
         <dd>
             @Html.DisplayFor(model => model.Name)
         </dd>
+        
+        <dt>
+            Формат
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Format)
+        </dd>
 
         <dt>
             Дата загрузки
@@ -35,14 +42,8 @@
             @Model.SizeAsMemory()
             
         </dd>
-
-        <dt>
-            Формат
-        </dt>
             
-        <dd>
-            @Html.DisplayFor(model => model.Format)
-        </dd>
+        
 
         <dt>
             Тип шаринга

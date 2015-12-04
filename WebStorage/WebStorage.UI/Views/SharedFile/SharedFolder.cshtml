@@ -52,10 +52,10 @@
                 Имя
             </th>
             <th>
-                Загружен
+                Формат
             </th>
             <th>
-                Формат
+                Загружен
             </th>
             <th>
                 Размер
@@ -78,10 +78,10 @@
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Uploaded)
+                    @Html.DisplayFor(modelItem => item.Format)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Format)
+                    @Html.DisplayFor(modelItem => item.Uploaded)
                 </td>
                 <td>
                     @item.SizeAsMemory()
