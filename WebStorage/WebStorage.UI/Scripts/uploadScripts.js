@@ -19,7 +19,7 @@ $(document).on('change', '#uploadedDir', sizeCheck);
     var bar = $('.progress-bar');
     var percent = $('.progress-bar');
 
-    $('form').ajaxForm({
+    $('*[name=uploadForm]').ajaxForm({
         beforeSend: function () {
             if ($('#uploadedFile').val() !== "" || $('#uploadedDir').val() !== "") {
                 var percentValue = '0%';
@@ -41,10 +41,8 @@ $(document).on('change', '#uploadedDir', sizeCheck);
                 var percentValue = '100%';
                 bar.width(percentValue);
                 percent.html(percentValue);
+                location.reload();
             }
-        },
-        complete: function (xhr) {
-            $("body").html(xhr.responseText);
         }
     });
 })();
