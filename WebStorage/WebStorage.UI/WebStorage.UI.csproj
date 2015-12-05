@@ -218,6 +218,11 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Confirmation.css" />
+    <Content Include="Content\Confirm\body_bg.jpg" />
+    <Content Include="Content\Confirm\buttons.png" />
+    <Content Include="Content\Confirm\header_bg.jpg" />
+    <Content Include="Content\Confirm\ie.png" />
     <Content Include="Content\ErrorImg\Futurama Fry.png" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\FileImg\default.png" />
@@ -559,11 +564,13 @@
     <Content Include="Scripts\jquery-2.1.4.min.js" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.confirm.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\confirmation.js" />
     <Content Include="Scripts\uploadScripts.js" />
     <Content Include="Scripts\webapp\editor_config.js" />
     <Content Include="Web.config">

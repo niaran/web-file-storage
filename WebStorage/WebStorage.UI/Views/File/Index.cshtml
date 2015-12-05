@@ -14,6 +14,7 @@
     <link href="~/Content/bootstrap.css" rel="stylesheet" />
     <script src="~/Scripts/bootstrap.min.js"></script>    
     <link href="~/Content/File.css" type="text/css" rel="stylesheet" />
+    <link href="~/Content/Confirmation.css" type="text/css" rel="stylesheet" />
     <style>
         .hiddenSubmit, .hiddenTextBox {
             display: none;
@@ -34,7 +35,7 @@
         .modal-footer {
             background-color:yellow;
         }
-        a.glyphicon-trash, a.glyphicon-share, a.glyphicon-info-sign, a.glyphicon-download, a.glyphicon-edit {
+        .glyphicon-trash, a.glyphicon-share, a.glyphicon-info-sign, a.glyphicon-download, a.glyphicon-edit {
            font-size: 1.2em;
            color:black;
         }
@@ -235,8 +236,7 @@
                     @item.SizeAsMemory()
                 </td>
                 <td valign="middle" align="center">
-
-                    @Html.ActionLink(" ", "Delete", new { id = item.Id }, new { @class = "glyphicon glyphicon-trash" })
+                    <span class="glyphicon glyphicon-trash" name="deleteLink" id="@Url.Action("Delete", new { id = item.Id})"> </span>
                     @if (item.Sharing_Atribute == 1)
                     {
                         @Html.ActionLink(" ", "ShareReadOnly", new { id = item.Id }, new { @class = "glyphicon glyphicon-share" })
@@ -260,11 +260,15 @@
                         @Html.ActionLink(" ", "EditDocFile", new { Id = item.Id }, new { @class = "glyphicon glyphicon-edit", target = "_blank", title = "Edit boxdoc file" })
                     }
                 </td>
-
+                
             </tr>
         }
+        
 
     </table>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+    <script src="~/Scripts/jquery.confirm.js"></script>
+    <script src="~/Scripts/confirmation.js"></script>
     <script>
 
         $("#docName").keyup(function () {
