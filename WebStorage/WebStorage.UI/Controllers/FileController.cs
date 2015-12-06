@@ -290,8 +290,15 @@ namespace WebStorage.UI.Controllers
             await _fileManeger.EditFileName(file, fileName);
             return Redirect(Request.UrlReferrer.AbsoluteUri);
         }
+
 #region ///////////////////// .doc /////////////////////
 
+        /// <summary>
+        /// Create .doc file
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="ParentId"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpPost]
         public async Task<ActionResult> CreateDocFile(String name, Int32? ParentId)
@@ -303,12 +310,17 @@ namespace WebStorage.UI.Controllers
             }
             catch
             {
-                return View("EditError",
+                return View("EditError", null,
                     "Have some problem with file. Please close the tab and try again later.");
             }            
             return View("EditDocFile", model);
         }
 
+        /// <summary>
+        /// Edit .doc file.
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
         [Authorize]
         public ActionResult EditDocFile(Int32 Id)
         {
@@ -320,13 +332,19 @@ namespace WebStorage.UI.Controllers
             }
             catch
             {
-                return View("EditError",
+                return View("EditError", null,
                     "Have some problem with file. Please close the tab and try again later.");
             }
 
             return View(model);
         }
 
+        /// <summary>
+        /// Edit .doc file. HttpPost
+        /// Update existing  .doc file.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpPost]
         public async Task<ActionResult> EditDocFile(WebStorageDoc model)
@@ -338,22 +356,27 @@ namespace WebStorage.UI.Controllers
             }
             catch
             {
-                return View("EditError",
+                return View("EditError", null, 
                     "Have some problem with file. Please close the tab and try again later.");
             }
             return View(new_model);
         }
 
+        /// <summary>
+        /// Get parent folder and map .doc view model
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="ParentId"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
         private async Task<WebStorageDoc> WorkWithDocFile(String name, Int32? ParentId, String content)
         {
             ////////////// Find user //////////////
             String user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
             AppUser user = UserManager.FindByName(user_name);
-
             ////////////// Additional Info instances //////////////
             String _pathToParentFolder;
             SystemFile ParentFolder;
-
             ////////////// Get additional Info //////////////           
             if (!ParentId.HasValue)
             {
@@ -365,51 +388,75 @@ namespace WebStorage.UI.Controllers
                 _pathToParentFolder = _fileManeger.GetFileById(ParentId.Value).Path;
                 ParentFolder = _fileManeger.GetFileById(ParentId.Value);
             }
+            ////////////// Get .doc view model ////////////// 
+            WebStorageDoc model = await MappingDocViewModel(user, content, ParentId, ParentFolder, _pathToParentFolder, name);
+            
+            return model;
+        }
 
-            ////////////// ViewModel and SystemFile instances //////////////
+        /// <summary>
+        /// Update or create .doc file.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="editorContent"></param>
+        /// <param name="fileParentId"></param>
+        /// <param name="fileParentFolder"></param>
+        /// <param name="_pathToParentFolder"></param>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        private async Task<WebStorageDoc> MappingDocViewModel(AppUser user, String editorContent, Int32? fileParentId, SystemFile fileParentFolder, 
+            String _pathToParentFolder, String fileName)
+        {
             WebStorageDoc model = new WebStorageDoc();
-            SystemFile _file = _fileManeger.GetFolderContent(ParentId).ToList<SystemFile>().FirstOrDefault(o => o.Name == name);
-
+            SystemFile _file = _fileManeger.GetFolderContent(fileParentId).ToList<SystemFile>().FirstOrDefault(o => o.Name == fileName && o.Format == ".boxdoc");
+            Decimal fileSizeBeforUpdate = 0M;
             ////////////// Fill ViewModel //////////////
             if (_file == null)
             {
                 ////////////// Create temp file //////////////
-                System.IO.File.Create(Path.Combine(_pathToParentFolder, name + ".boxdoc")).Close();
-
+                System.IO.File.Create(Path.Combine(_pathToParentFolder, fileName + ".boxdoc")).Close();
                 FileInfo _info = null;
                 DirectoryInfo _di = new DirectoryInfo(_pathToParentFolder);
-
                 ////////////// Get info about temp file //////////////
                 foreach (FileInfo _finfo in _di.GetFiles("*.boxdoc"))
                 {
-                    if (_finfo.Name == name + ".boxdoc")
+                    if (_finfo.Name == fileName + ".boxdoc")
                     {
                         _info = _finfo;
                     }
                 }
-
                 ////////////// Create new path for temp file //////////////
-                String savepath = await _fileManeger.SaveSingleFile(_info, user, ParentFolder, _info.Length);
-
+                String savepath = await _fileManeger.SaveSingleFile(_info, user, fileParentFolder, _info.Length);
                 ////////////// Fill ViewModel //////////////
-                model.WriteToDocFile(savepath, content);
+                model.WriteToDocFile(savepath, editorContent);
                 model.EditorContent = model.ReadDocFile(savepath);
-                model.ParentId = ParentId;
-                model.FileName = name + ".boxdoc"; //savepath.Split('\\').Last()
-
+                model.ParentId = fileParentId;
+                model.FileName = fileName;
                 ////////////// Delete temp file //////////////
                 System.IO.File.Delete(_info.FullName);
             }
             else
             {
-                ////////////// Fill ViewModel //////////////
-                model.WriteToDocFile(_file.Path, content);
+                ////////////// Fill ViewModel ////////////////////////
+                //============ Get additional info about file ========
+                fileSizeBeforUpdate = new FileInfo(_file.Path).Length;                
+                //============ Write to file =========================
+                model.WriteToDocFile(_file.Path, editorContent);
+                //============ Change file info ======================
+                _file.Size = new FileInfo(_file.Path).Length;
+                if (fileParentId != null)
+                {
+                    fileParentFolder.Size -= fileSizeBeforUpdate;
+                    fileParentFolder.Size += _file.Size;
+                } 
+                await _fileManeger.dbContext.SaveChangesAsync();
+                //============ Fill ViewModel ========================
                 model.EditorContent = model.ReadDocFile(_file.Path);
-                model.ParentId = ParentId;
-                model.FileName = name;
-            }            
+                model.ParentId = fileParentId;
+                model.FileName = fileName;                
+            }
             return model;
-        }        
+        }
         #endregion
     }
 }
