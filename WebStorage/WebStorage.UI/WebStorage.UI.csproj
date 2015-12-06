@@ -223,6 +223,7 @@
     <Content Include="Content\Confirm\buttons.png" />
     <Content Include="Content\Confirm\header_bg.jpg" />
     <Content Include="Content\Confirm\ie.png" />
+    <Content Include="Content\custom-modal\web-storage-modal.css" />
     <Content Include="Content\ErrorImg\Futurama Fry.png" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\FileImg\default.png" />
@@ -573,6 +574,7 @@
     <Content Include="Scripts\confirmation.js" />
     <Content Include="Scripts\uploadScripts.js" />
     <Content Include="Scripts\webapp\editor_config.js" />
+    <Content Include="Scripts\webapp\web-storage-modal.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

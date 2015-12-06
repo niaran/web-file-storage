@@ -15,6 +15,7 @@
     <script src="~/Scripts/bootstrap.min.js"></script>    
     <link href="~/Content/File.css" type="text/css" rel="stylesheet" />
     <link href="~/Content/Confirmation.css" type="text/css" rel="stylesheet" />
+    <link href="~/Content/custom-modal/web-storage-modal.css" rel="stylesheet" />
     <style>
         .hiddenSubmit, .hiddenTextBox {
             display: none;
@@ -23,18 +24,7 @@
         td .glyphicon-folder-open:hover, td .glyphicon-file:hover {
             color: orange;
         }
-        .modal-header, .close {
-            background-color:blue;
-            color: white !important;
-            text-align: center;
-            font-size: 30px;
-        }
-        .modal-body{
-            background-color:chartreuse;
-        }
-        .modal-footer {
-            background-color:yellow;
-        }
+
         .glyphicon-trash, a.glyphicon-share, a.glyphicon-info-sign, a.glyphicon-download, a.glyphicon-edit {
            font-size: 1.2em;
            color:black;
@@ -52,25 +42,24 @@
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Create .boxdoc</h4>
+                    <button type="button" class="close overrideclose" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Create ShareBox document:</h4>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-modal-body">
                     <form role="form">
-                        <label for="docfile">File name:</label>
+                        <h4>File name:</h4><!--for="docfile"-->
                         <div class="input-group">                            
-                            <input type="text" class="form-control" id="docName" aria-describedby="basic-addon" name="name" placeholder="Enter file name">
+                            <input type="text" class="form-control modal-body-input" id="docName" aria-describedby="basic-addon" name="name" placeholder="Enter file name">
                             <span class="input-group-addon" id="basic-addon">.boxdoc</span>
                         </div>
                     </form>
                 </div>
-                <div class="modal-footer" style="margin-top:unset">
+                <div class="modal-footer">
                     @if (ViewBag.Folder != null)
                     {
                         <input type="hidden" value="@ViewBag.Folder.Id" name="ParentId" />
                     }
-                    <button class="btn btn-info" id="crtBtn" type="submit" formtarget="_blank">Create</button>
-                    <button id="Btn" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button class="btn modal-footer-btn" id="crtBtn" type="submit" formtarget="_blank">Create .boxdoc</button>
                 </div>
             </div>
         </div>
@@ -266,33 +255,8 @@
         
 
     </table>
+    <script src="~/Scripts/webapp/web-storage-modal.js"></script>
     <script>
-
-        $("#docName").keyup(function () {
-            var empty = false;
-            $("#docName").each(function () {
-                if ($(this).val().length == 0 || !$(this).val().trim())
-                    empty = true;
-            });
-            if (empty) {
-                $("#crtBtn").attr("disabled", true);
-            } else {
-                $("#crtBtn").attr("disabled", false);
-            }
-        });
-
-        $("#docBtn").click(function () {
-            $("#docMod").modal();
-            if (!$("#docName").val().trim())
-                $("#crtBtn").attr("disabled", true);
-        });
-        $("#crtBtn").click(function () {           
-            $("#docMod").modal('hide');
-            $('#docMod').on('hidden.bs.modal', function () {
-                window.location.reload();
-            });
-        });   
-        
 
         var singleFileUploadValue = "none";
         var folderUploadValue = "none";

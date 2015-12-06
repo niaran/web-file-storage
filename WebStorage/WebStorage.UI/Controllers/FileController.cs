@@ -306,7 +306,10 @@ namespace WebStorage.UI.Controllers
             WebStorageDoc model;
             try
             {
-                model = await WorkWithDocFile(name, ParentId, String.Empty);
+                if (String.IsNullOrEmpty(name))
+                    throw new ArgumentException("name of file");
+
+                model = await WorkWithDocFile(name.Trim(), ParentId, String.Empty);
             }
             catch
             {
