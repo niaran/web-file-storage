@@ -28,6 +28,16 @@ namespace WebStorage.Domain.Entities
         {
             dbContext = db;
         }
+
+        public void UpdateFileEditInfo(Int32 fileId)
+        {
+            EditFileInfo info = new EditFileInfo();
+            info.FileId = fileId;
+            info.Edited = DateTime.Now;
+            dbContext.EditFileInfoes.Add(info);
+            dbContext.SaveChanges();
+        }
+
         //Метод для вписания файла в БД и получения его физического пути, для дальнейшего использования
         public async Task<string> SaveSingleFile(FileInfo fileInfo, AppUser user, SystemFile ParentElement, decimal fileSize)
         {

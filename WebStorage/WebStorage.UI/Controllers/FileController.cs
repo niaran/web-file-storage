@@ -451,7 +451,8 @@ namespace WebStorage.UI.Controllers
                 {
                     fileParentFolder.Size -= fileSizeBeforUpdate;
                     fileParentFolder.Size += _file.Size;
-                } 
+                }
+                _fileManeger.UpdateFileEditInfo(_file.Id);
                 await _fileManeger.dbContext.SaveChangesAsync();
                 //============ Fill ViewModel ========================
                 model.EditorContent = model.ReadDocFile(_file.Path);

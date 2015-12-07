@@ -11,6 +11,7 @@
     }
 });
 
+
 $("#docBtn").click(function () {
     $("#docMod").modal({ backdrop: false });
     if (!$("#docName").val().trim())

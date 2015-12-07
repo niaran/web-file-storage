@@ -229,6 +229,7 @@
     <Content Include="Content\FileImg\default.png" />
     <Content Include="Content\FileImg\doc.jpg" />
     <Content Include="Content\FileImg\folder.png" />
+    <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\Login\mlechnyj.jpg" />
     <Content Include="Content\Login\moon.jpg" />
     <Content Include="Content\Site.css" />
@@ -602,7 +603,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Manager\Index.cshtml" />
     <Content Include="Views\File\Index.cshtml" />
     <Content Include="Views\Shared\FileInfo.cshtml" />
