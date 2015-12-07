@@ -89,7 +89,7 @@ namespace WebStorage.UI.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult> Delete(int id, int? location)
+        public async Task<ActionResult> Delete(int id)
         {
             //Проверяем текущего юзера на владение папки или файла.
             string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
@@ -103,18 +103,10 @@ namespace WebStorage.UI.Controllers
             if (await _fileManeger.DeleteSystemFile(id) == true)
             {
                 ViewBag.Result = "Файл удален";
-                if (location != null)
-                {
-                    return Redirect(Request.UrlReferrer.AbsoluteUri);
-                }
-                return RedirectToAction("Index");
-            }
-            ViewBag.Result = "Возникли ошибки";
-            if (location != null)
-            {
                 return Redirect(Request.UrlReferrer.AbsoluteUri);
             }
-            return RedirectToAction("Index");
+            ViewBag.Result = "Возникли ошибки";
+            return Redirect(Request.UrlReferrer.AbsoluteUri);
         }
 
         [Authorize]
