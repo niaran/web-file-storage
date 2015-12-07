@@ -149,9 +149,9 @@ namespace WebStorage.UI.Controllers
             }
             SystemFile folder = _fileManeger.GetFile(folderId);
             if (folder == null)
-                throw new KeyNotFoundException();
+                return null;
             if (folder.Owner.UserName != HttpContext.User.Identity.Name)
-                throw new UnauthorizedAccessException();
+                return null;
             ViewBag.Folder = folder;
             ViewBag.UserID = UserManager.FindByName(HttpContext.User.Identity.Name);
             return View(_fileManeger.GetFolderContentWithUser(folderId, user));
@@ -238,7 +238,7 @@ namespace WebStorage.UI.Controllers
                     return File(bytes, System.Net.Mime.MediaTypeNames.Application.Octet, file.Name + ".zip"); ;
                 }
             }
-            else throw new NullReferenceException();
+            else return null;
         }
 
         [Authorize]

@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebStorage.UI", "WebStorage
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebStorage.Domain", "WebStorage.Domain\WebStorage.Domain.csproj", "{6A3F96C1-5A1F-4F69-B407-CECB5BEB80B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebStorage.Tests", "WebStorage.Tests\WebStorage.Tests.csproj", "{F55A1B63-B55B-4F0F-87D6-25E8DA5CCFCD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{6A3F96C1-5A1F-4F69-B407-CECB5BEB80B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A3F96C1-5A1F-4F69-B407-CECB5BEB80B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A3F96C1-5A1F-4F69-B407-CECB5BEB80B4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F55A1B63-B55B-4F0F-87D6-25E8DA5CCFCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F55A1B63-B55B-4F0F-87D6-25E8DA5CCFCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F55A1B63-B55B-4F0F-87D6-25E8DA5CCFCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F55A1B63-B55B-4F0F-87D6-25E8DA5CCFCD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

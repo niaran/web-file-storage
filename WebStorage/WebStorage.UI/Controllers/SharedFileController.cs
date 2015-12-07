@@ -26,7 +26,7 @@ namespace WebStorage.UI.Controllers
                 if (file.IsFile)
                 {
                     if (contentId != null)
-                        throw new UnauthorizedAccessException();
+                        return null;
                     else
                     {
                         ViewBag.Root = rootSharingId;
@@ -41,7 +41,7 @@ namespace WebStorage.UI.Controllers
                 }
             }
             else
-                throw new UnauthorizedAccessException();
+                return null;
 
         }
 
@@ -67,7 +67,7 @@ namespace WebStorage.UI.Controllers
             }
             else
             {
-                throw new UnauthorizedAccessException();
+                return null;
             }
 
         }
@@ -84,7 +84,7 @@ namespace WebStorage.UI.Controllers
                 return View("SharedInfo", file);
             }
             else
-                throw new UnauthorizedAccessException();
+                return null;
             
         }
 
