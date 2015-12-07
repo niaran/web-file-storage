@@ -1,15 +1,15 @@
-$("*[name=deleteLink]").click(function (event) {
+﻿$("*[name=deleteLink]").click(function (event) {
     $.confirm({
-        'title': 'Delete Confirmation',
-        'message': 'You are about to delete this file. <br />It cannot be restored at a later time! Continue?',
+        'title': 'Подтверждение удаления',
+        'message': 'Вы хотите удалить данный файл. <br />Он не сможет быть восстановлен позже! Продолжаем?',
         'buttons': {
-            'Yes': {
+            'Да': {
                 'class': 'blue',
                 'action': function () {
                    location = event.target.id;
                 }
             },
-            'No': {
+            'Нет': {
                 'class': 'gray',
                 'action': function () {
 

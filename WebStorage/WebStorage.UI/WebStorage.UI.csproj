@@ -230,6 +230,7 @@
     <Content Include="Content\FileImg\doc.jpg" />
     <Content Include="Content\FileImg\folder.png" />
     <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\ForLayout.css" />
     <Content Include="Content\Login\mlechnyj.jpg" />
     <Content Include="Content\Login\moon.jpg" />
     <Content Include="Content\Site.css" />
@@ -562,6 +563,7 @@
     <Content Include="Scripts\ckeditor\CHANGES.md" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\ckeditor\styles.js" />
+    <Content Include="Scripts\FormButtons.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
