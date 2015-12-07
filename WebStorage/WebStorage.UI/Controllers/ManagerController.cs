@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Web;
 using WebStorage.UI.Models;
 using System.Web.Mvc;
+using System.IO;
 
 namespace WebStorage.UI.Controllers
 {
@@ -27,19 +28,14 @@ namespace WebStorage.UI.Controllers
         {
             get { return HttpContext.GetOwinContext().GetUserManager<AppUserManager>(); }
         }
+
+        private FileManager fileManager;
         #endregion
 
-        /*
-        Этот метод действия представлен в качестве тестового.
-        На самом деле в дальнейшем такого не будет.
-
-        Также необходимо будет исправить в дальнейшем некоторые 
-        перенаправления к представлениям.
-        */
-        //public ActionResult Index()
-        //{
-        //    return View(UserManager.Users);
-        //}
+        public ManagerController()
+        {
+            fileManager = new FileManager();
+        }
 
         #region /////////////////////////////// Create user section ///////////////////////////////
 
@@ -99,14 +95,27 @@ namespace WebStorage.UI.Controllers
             AppUser _user = await UserManager.FindByIdAsync(Id);
             if (_user != null)
             {
-                IdentityResult _result = await UserManager.DeleteAsync(_user);
-                if (_result.Succeeded)
+                //IdentityResult _result = await UserManager.DeleteAsync(_user);
+                try
                 {
+                    IEnumerable<SystemFile> allUserFiles = fileManager.dbContext.SystemFiles.Where(o => o.OwnerId == _user.Id).AsEnumerable<SystemFile>();
+
+                    fileManager.dbContext.SystemFiles.RemoveRange(allUserFiles);
+                    fileManager.dbContext.SaveChanges();
+
+                    foreach (var item in new DirectoryInfo(_user.PathToMainFolder).EnumerateFiles())
+                    {
+                        item.Delete();
+                    }
+                    foreach (var item in new DirectoryInfo(_user.PathToMainFolder).EnumerateDirectories())
+                    {
+                        item.Delete(true);
+                    }
                     return RedirectToAction("Login", "Account");
                 }
-                else
+                catch
                 {
-                    return View("Error", _result.Errors);
+                    return View("Error", "Have some error");
                 }
             }
             else
@@ -144,7 +153,6 @@ namespace WebStorage.UI.Controllers
         /// <param name="password"></param>
         /// <returns></returns>
         [HttpPost]
-        //[ValidateAntiForgeryToken] ???????????????????????
         public async Task<ActionResult> Edit(String Id, String email, String password)
         {
             AppUser _user = await UserManager.FindByIdAsync(Id);

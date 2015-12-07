@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_LayoutAccount.cshtml";
 }
 
-<div class="logform">
+<div class="logform" style="color:white;">
     @Html.ValidationSummary()
     @using (Html.BeginForm("Create", "Manager",FormMethod.Post ,new { @class = "form-horizontal", role = "form" }))
     {
