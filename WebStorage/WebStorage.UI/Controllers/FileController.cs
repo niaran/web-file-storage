@@ -95,6 +95,8 @@ namespace WebStorage.UI.Controllers
             string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
             AppUser user = await UserManager.FindByNameAsync(user_name);
             SystemFile file = _fileManeger.GetFile(id);
+            if (file == null)
+                return null;
             if (user == null || file.OwnerId != user.Id || file == null)
             {
                 return null;
@@ -162,6 +164,8 @@ namespace WebStorage.UI.Controllers
         public async Task<ActionResult> ShareReadOnly(int id)
         {
             SystemFile file = _fileManeger.GetFile(id);
+            if (file == null)
+                return null;
             //Проверяем текущего юзера на владение папки.
             string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
             AppUser user = await UserManager.FindByNameAsync(user_name);
@@ -182,6 +186,8 @@ namespace WebStorage.UI.Controllers
         public async Task<ActionResult> ShareOwnerOnly(int id)
         {
             SystemFile file = _fileManeger.GetFile(id);
+            if (file == null)
+                return null;
             //Проверяем текущего юзера на владение папки.
             string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
             AppUser user = await UserManager.FindByNameAsync(user_name);
@@ -217,7 +223,9 @@ namespace WebStorage.UI.Controllers
             if (Id != null)
             {
                 SystemFile file = _fileManeger.GetFile(Id);
-                //Проверяем текущего юзера на владение папки.
+                if (file == null)
+                    return null;
+                    //Проверяем текущего юзера на владение папки.
                 string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
                 AppUser user = await UserManager.FindByNameAsync(user_name);
                 if (user == null || file.OwnerId != user.Id)
@@ -328,6 +336,8 @@ namespace WebStorage.UI.Controllers
         public ActionResult EditDocFile(Int32 Id)
         {
             SystemFile file = _fileManeger.GetFileById(Id);
+            if (file == null)
+                return null;
             WebStorageDoc model = new WebStorageDoc() { FileName = file.Name, ParentId = file.ParentId };
             try
             {
