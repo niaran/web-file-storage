@@ -19,7 +19,6 @@ using System.Security.Claims;
 
 namespace WebStorage.UI
 {
-    
     public class IdentityConfig
     {
         public void Configuration(IAppBuilder app)
@@ -57,11 +56,12 @@ namespace WebStorage.UI
                 })
             });
 
-            // Facebook
+            //https://developers.facebook.com/apps/
+            //https://localhost:44349/signin-facebook
             app.UseFacebookAuthentication(new FacebookAuthenticationOptions
             {
-                AppId = "917487295003220",
-                AppSecret = "bc8711e7f19d4607a2b67e45bde83f11"/*,
+                AppId = "195976144194610",
+                AppSecret = "7c91f8bfd89f0b1bf3e0cf2e0dfa69fb"/*,
                 Scope = { "email" },
                 Provider = new FacebookAuthenticationProvider
                 {
@@ -73,8 +73,13 @@ namespace WebStorage.UI
                 }*/
             });
 
-            // GitHub
-            app.UseGithubAuthentication("58f46fe092484b58a158", "e069bfbe0b498b8258951847573258579ce92203");
+            //https://github.com/settings/developers
+            //https://localhost:44349/signin-github
+            app.UseGithubAuthentication("8ab02bf3204e39faacdc", "e96c920a1130d8d9b9708e4d8adf06ca0898ab13");
+
+            //https://apps.dev.microsoft.com/#/appList
+            //https://localhost:44349/signin-microsoft
+            app.UseMicrosoftAccountAuthentication("59359d74-e18f-4a5c-b21a-6f4d7753d392", "rB0ZE3CcxUyYosUrtPYFUTH");
 
             // LinkedIn
             app.UseLinkedInAuthentication("77fr5gyx4dgr54", "IN3HJqpSRuFfVpAe");
