@@ -7,30 +7,30 @@
 
 <div class="logform" style="color:white;">
     @Html.ValidationSummary()
-    @using (Html.BeginForm("Create", "Manager",FormMethod.Post ,new { @class = "form-horizontal", role = "form" }))
+    @using (Html.BeginForm("Create", "Manager", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
     {
         <div class="form-group">
             @Html.LabelFor(m => m.Name, new { @class = "col-md-2 control-label", style = "color:white" })
             <div class="col-md-4">
-                @Html.TextBoxFor(x => x.Name, new { @class = "form-control", placeholder = "Please, enter your user name" })
+                @Html.TextBoxFor(x => x.Name, new { @class = "form-control", placeholder = "Пожалуйста, введите логин:" })
             </div>
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label", style = "color:white" })
             <div class="col-md-4">
-                @Html.TextBoxFor(x => x.Email, new { @class = "form-control", placeholder = "Please, enter your mail" })
+                @Html.TextBoxFor(x => x.Email, new { @class = "form-control", placeholder = "Пожалуйста, введите адрес электронной почты:" })
             </div>
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label", style = "color:white" })
             <div class="col-md-4">
-                @Html.TextBoxFor(x => x.Password, new { @class = "form-control", placeholder = "Please, enter your password" })
+                @Html.TextBoxFor(x => x.Password, new { @class = "form-control", placeholder = "Пожалуйста, введите пароль:" })
             </div>
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <button type="submit" class="btn btn-primary">Create</button>
-                @Html.ActionLink("Cancel","Login", "Account", null, new { @class = "btn btn-default" })
+                <button type="submit" class="btn btn-primary">Создать!</button>
+                @Html.ActionLink("Cancel", "Login", "Account", null, new { @class = "btn btn-default" })
             </div>
         </div>        
     }

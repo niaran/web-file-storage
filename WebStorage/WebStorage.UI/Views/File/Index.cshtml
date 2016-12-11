@@ -31,7 +31,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close overrideclose" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Создание ShareBox документа:</h4>
+                    <h4 class="modal-title">Создание WebStorage документа:</h4>
                 </div>
                 <div class="modal-body text-modal-body">
                     <form role="form">
@@ -95,7 +95,7 @@
             Загрузка файлов
             @using (Html.BeginForm("Create", "File", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-inline", @name="uploadForm" }))
             {
-                <span id="uploadErr" hidden>Загрузка отменена. Один из загружаемых файлов по размеру превышает 100Mb</span>
+                <span id="uploadErr" hidden>Загрузка отменена. Один из загружаемых файлов по размеру превышает 100 Мбайт.</span>
                 <br />
                 <input class="form-control  " type="file" name="uploadedFile" id="uploadedFile" multiple />
                 <input class="form-control" type="submit" value="Загрузить" />
@@ -115,7 +115,7 @@
             Загрузка папки
             @using (Html.BeginForm("Create", "File", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-inline", @name = "uploadForm" }))
             {
-                <span id="uploadErr" hidden>Загрузка отменена. Один из загружаемых файлов по размеру превышает 100Mb</span>
+                <span id="uploadErr" hidden>Загрузка отменена. Один из загружаемых файлов по размеру превышает 100 Мбайт.</span>
                 <br />
                 <input class="form-control" type="file" name="uploadedDir" id="uploadedDir" webkitdirectory directory multiple />
                 <input class="form-control" type="submit" value="Загрузить" />
@@ -155,7 +155,7 @@
                 @Html.ActionLink("Загружен", "OrderList", new { @orderBy = 1 })
             </th>
             <th>
-                @Html.ActionLink("Шаринг", "OrderList", new { @orderBy = 3 })
+                @Html.ActionLink("Доступ", "OrderList", new { @orderBy = 3 })
             </th>
             <th>
                 @Html.ActionLink("Размер", "OrderList", new { @orderBy = 5 })
@@ -195,7 +195,7 @@
                 <td>
                     @if (item.Sharing_Atribute == 1)
     {
-                        @:Не расшарен
+                        @:Нет
                     }
                     else if (item.Sharing_Atribute == 2)
                     {
@@ -205,7 +205,7 @@
                         }
                         else
                         {
-                            @:Расшарен внутри папки
+                            @:Доступен внутри папки
                         }
                     }
                 </td>
@@ -229,7 +229,7 @@
                     }
                     else
                     {
-                        <span title="Загрузка папок более 100Mb одним архивом запрещена" style="color:red" class="glyphicon glyphicon-download"></span>
+                        <span title="Загрузка папок более 100 Мбайт одним архивом запрещена." style="color:red" class="glyphicon glyphicon-download"></span>
                     }
 
                     @if (item.Format == ".boxdoc")

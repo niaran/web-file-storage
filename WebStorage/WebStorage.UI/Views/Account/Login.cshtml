@@ -9,9 +9,8 @@
     Dictionary<String, String> templForBtn = new Dictionary<string, string>()
     {
         ["github"] = "github",
-        ["twitter"] = "twitter",
         ["facebook"] = "facebook",
-        ["linkedin"] = "linkedin"
+        ["microsoft"] = "microsoft"
     };
 }
 @if (TempData["loginmessage"] != null)
@@ -28,27 +27,27 @@
         <div class="form-group">
             @Html.LabelFor(m => m.Name, new { @class = "col-md-2 control-label", style = "color:white" })
             <div class="col-md-4">
-                @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Please, enter your user name" })
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Пожалуйста, введите Ваш логин" })
                 @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
             </div>
         </div>
             <div class="form-group">
                 @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label", style = "color:white" })
                 <div class="col-md-4">
-                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Please, enter your password" })
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Пожалуйста, введите Ваш пароль" })
                     @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-4">
                     @Html.CheckBoxFor(m => m.remember)
-                    @Html.LabelFor(m => m.remember, "Remember me", new { style = "color:white" })
+                    @Html.LabelFor(m => m.remember, "Запомнить", new { style = "color:white" })
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
                     <input type="submit" value="Log in" class="btn btn-info" />
-                    @Html.ActionLink("Create account", "Create","Manager", null, new { style = "color:white" })
+                    @Html.ActionLink("Создать аккаунт", "Create","Manager", null, new { style = "color:white" })
                 </div>
             </div>
     }
