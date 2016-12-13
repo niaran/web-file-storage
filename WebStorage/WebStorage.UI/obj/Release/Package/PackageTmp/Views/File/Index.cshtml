@@ -1,0 +1,252 @@
+﻿@model IEnumerable<WebStorage.Domain.Entities.SystemFile>
+
+<!DOCTYPE html>
+
+
+<html>
+
+<head>
+
+    <meta name="viewport" content="width=device-width" />
+    <script type="text/javascript" src="~/Scripts/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="~/Scripts/rightClickMenu.js"></script>
+    <script src="~/Scripts/jquery.form.js"></script>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <script src="~/Scripts/bootstrap.min.js"></script>    
+    <link href="~/Content/File.css" type="text/css" rel="stylesheet" />
+    <link href="~/Content/Confirmation.css" type="text/css" rel="stylesheet" />
+    <link href="~/Content/custom-modal/web-storage-modal.css" rel="stylesheet" />
+    
+</head>
+
+<body>
+
+    @using (Html.BeginForm("CreateDocFile", "File"))
+    {
+    <!--Modal-->
+    <div id = "docMod" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close overrideclose" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Создание WebStorage документа:</h4>
+                </div>
+                <div class="modal-body text-modal-body">
+                    <form role="form">
+                        <h4>Имя файла:</h4><!--for="docfile"-->
+                        <div class="input-group">                            
+                            <input type="text" class="form-control modal-body-input" id="docName" aria-describedby="basic-addon" name="name" placeholder="Введите имя сюда">
+                            <span class="input-group-addon" id="basic-addon">.boxdoc</span>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    @if (ViewBag.Folder != null)
+                    {
+                        <input type="hidden" value="@ViewBag.Folder.Id" name="ParentId" />
+                    }
+                    <button class="btn modal-footer-btn" id="crtBtn" type="submit" formtarget="_blank">Создать  .boxdoc</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+
+    <div class="row ">
+        <div class="col-lg-1 UpButton">
+            @if (ViewBag.Folder != null)
+        {
+            @Html.ActionLink(" ", "Index", new { folderId = ViewBag.Folder.ParentId }, new { @class = "glyphicon glyphicon-level-up  " })
+            }
+        </div>
+        <div class="col-lg-6 UpButton">
+            @if (ViewBag.Folder != null)
+        {
+                <strong> @ViewBag.Folder.Name</strong>
+            }
+        </div>
+        <button onclick="forSingleFileForm()" class="btn btn-default col-lg-1 col-lg-offset-1" title="Загрузка файла">
+            <span class="glyphicon glyphicon-file">
+            </span>
+            <span class="glyphicon glyphicon-upload">
+            </span>
+        </button>
+        <button onclick="forFolderForm()" class="btn btn-default col-lg-1 " title="Загрузка папки">
+            <span class="glyphicon glyphicon-folder-open">
+            </span>
+            <span class="glyphicon glyphicon-upload">
+            </span>
+        </button>
+        <button class="btn btn-default col-lg-1" id="docBtn"  title="Создание нового файла .boxdoc">
+            <i class="glyphicon glyphicon-file"></i>
+            <i class="glyphicon glyphicon-plus"></i>
+        </button>
+        <button onclick="forFolderCreate()" class="btn btn-default col-lg-1" title="Создание новой папки">
+            <span class="glyphicon glyphicon-folder-open">
+            </span>
+            <span class="glyphicon glyphicon-plus">
+            </span>
+        </button>
+    </div>
+    <div class="row edit-menu">
+        <div id="singleFileUpload" class="row text-center">
+            Загрузка файлов
+            @using (Html.BeginForm("Create", "File", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-inline", @name="uploadForm" }))
+            {
+                <span id="uploadErr" hidden>Загрузка отменена. Один из загружаемых файлов по размеру превышает 100 Мбайт.</span>
+                <br />
+                <input class="form-control  " type="file" name="uploadedFile" id="uploadedFile" multiple />
+                <input class="form-control" type="submit" value="Загрузить" />
+                <div class="progress center-block">
+                    <div class="progress-bar">0%</div>
+                </div>
+                if (ViewBag.Folder != null)
+                {
+                    <input type="hidden" value="@ViewBag.Folder.Id" name="ParentId" />
+                }
+
+            }
+            <script src="~/Scripts/uploadScripts.js"></script>
+
+        </div>
+        <div id="folderUpload" class="row text-center">
+            Загрузка папки
+            @using (Html.BeginForm("Create", "File", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-inline", @name = "uploadForm" }))
+            {
+                <span id="uploadErr" hidden>Загрузка отменена. Один из загружаемых файлов по размеру превышает 100 Мбайт.</span>
+                <br />
+                <input class="form-control" type="file" name="uploadedDir" id="uploadedDir" webkitdirectory directory multiple />
+                <input class="form-control" type="submit" value="Загрузить" />
+                <div class="progress center-block">
+                    <div class="progress-bar">0%</div>
+                </div>
+                if (ViewBag.Folder != null)
+                {
+                    <input type="hidden" value="@ViewBag.Folder.Id" name="ParentId" />
+                }
+                <script src="~/Scripts/uploadScripts.js"></script>
+            }
+        </div>
+        <div id="folderCreate" class="row text-center">
+            Создание папки
+            @using (Html.BeginForm("CreateFolder", "File", FormMethod.Post, new { @class = "form-inline" }))
+            {
+                <input type="text" class="form-control" name="folderName" id="folderName" />
+                <input type="submit" class="form-control" value="Создать" />
+                if (ViewBag.Folder != null)
+                {
+                    <input type="hidden" value="@ViewBag.Folder.Id" name="ParentId" />
+                }
+            }
+        </div>
+
+    </div>
+    <table class="table table-bordered table-hover table-condense">
+        <tr>
+            <th>
+                @Html.ActionLink("Имя", "OrderList", new { @orderBy = 2 })
+            </th>
+            <th>
+                @Html.ActionLink("Формат", "OrderList", new { @orderBy = 4 })
+            </th>
+            <th>
+                @Html.ActionLink("Загружен", "OrderList", new { @orderBy = 1 })
+            </th>
+            <th>
+                @Html.ActionLink("Доступ", "OrderList", new { @orderBy = 3 })
+            </th>
+            <th>
+                @Html.ActionLink("Размер", "OrderList", new { @orderBy = 5 })
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+    {
+            <tr>
+                <td class="fileName" onselectstart="return false">
+
+                    @using (@Html.BeginForm("EditFileName", "File", FormMethod.Post, new { @class = "formTextEdit form-inline" }))
+                    {
+                        <span class="nameText">
+                            @if (item.IsFile)
+                            {
+                                <span class="glyphicon glyphicon-file"></span>
+                            }
+                            else
+                            {
+                                <span class="glyphicon glyphicon-folder-open" onclick="window.location.href = '@Url.Action("Index", "File", new { folderId = item.Id })'"></span>
+                            }
+                            <span class="spcName">@Html.DisplayFor(modelItem => item.Name)</span>
+                        </span>
+                        <input class="hiddenTextBox" name="fileName" type="text" value="@item.Name" />
+                        <input name="fileId" type="hidden" value="@item.Id" />
+                        <input class="hiddenSubmit" type="submit" />
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Format)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Uploaded)
+                </td>
+                <td>
+                    @if (item.Sharing_Atribute == 1)
+    {
+                        @:Нет
+                    }
+                    else if (item.Sharing_Atribute == 2)
+                    {
+                        if (item.Sharing_Id != null)
+                        {
+                            <a href="/Shared/@item.Sharing_Id">Shared/@item.Sharing_Id</a>
+                        }
+                        else
+                        {
+                            @:Доступен внутри папки
+                        }
+                    }
+                </td>
+                <td>
+                    @item.SizeAsMemory()
+                </td>
+                <td valign="middle" align="left">
+                    <span class="glyphicon glyphicon-trash" name="deleteLink" id="@Url.Action("Delete", new { id = item.Id })"> </span>
+                    @if (item.Sharing_Atribute == 1)
+                    {
+                        @Html.ActionLink(" ", "ShareReadOnly", new { id = item.Id }, new { @class = "glyphicon glyphicon-share" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink(" ", "ShareOwnerOnly", new { id = item.Id }, new { @class = "glyphicon glyphicon-check" })
+                    }
+                    @Html.ActionLink(" ", "Info", new { id = item.Id }, new { @class = "glyphicon glyphicon-info-sign"})
+                    @if (item.Size <= 104857600)
+                    {
+                        @Html.ActionLink("    ", "Download", new { Id = item.Id }, new { @class = "glyphicon glyphicon-download" })
+                    }
+                    else
+                    {
+                        <span title="Загрузка папок более 100 Мбайт одним архивом запрещена." style="color:red" class="glyphicon glyphicon-download"></span>
+                    }
+
+                    @if (item.Format == ".boxdoc")
+                    {
+                        @Html.ActionLink(" ", "EditDocFile", new { Id = item.Id }, new { @class = "glyphicon glyphicon-edit", target = "_blank", title = "Edit boxdoc file" })
+                    }
+                </td>
+                
+            </tr>
+        }
+        
+
+    </table>
+    <script src="~/Scripts/webapp/web-storage-modal.js"></script>
+    <script src="~/Scripts/FormButtons.js"></script>
+    <script src="~/Scripts/jquery.confirm.js"></script>
+    <script src="~/Scripts/confirmation.js"></script>
+</body>
+
+</html>

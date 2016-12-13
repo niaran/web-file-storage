@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width"/>
+    <title>Веб-хранилище</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet"/>
+    <link href="~/Content/bootstrap-social.css" rel="stylesheet"/>
+    <link href="~/Content/font-awesome.css" rel="stylesheet"/>
+    <link href="~/Content/bootstrap-theme.min.css" rel="stylesheet"/>
+    <link href="~/Content/font-awesome.min.css" rel="stylesheet"/>
+    <link href="~/Content/ForLayout.css" rel="stylesheet"/>
+    <link href="~/Content/Shortcut/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+</head>
+<body class="container">
+    <nav class="row">
+        <ul class="nav nav-pills nav-justified  img-rounded thumbnail" style="background-color:antiquewhite">
+            <li class="text-center"><strong class="Logo">@Html.ActionLink("Веб-хранилище", "Index", "File") </strong></li>
+            <li>
+                @using (Html.BeginForm("SearchFiles", "File", FormMethod.Post, new {@id="SearchForm", @class = "form-inline" }))
+                {
+                    <input type="text" class="form-control" placeholder="Поиск" name="searchString"/>
+                    <input type="hidden" value="@ViewBag.RootSharingId" name="RootSharingId" />
+                    <span class="glyphicon glyphicon-search" onclick="SearchClick()">
+                        <input type="submit" id="searchSbt" />
+                        @if (ViewBag.Folder != null)
+                        {
+                        <input type="hidden" value="@ViewBag.Folder.Id" name="ParentId" />
+                        }
+                    </span>
+                }
+            </li>
+            <li title="Общедоступные файлы"><a href='@(Url.Action("SharedList", "File"))'><i class="fa fa-users fa-lg"></i></a></li>
+            <li title="Редактировать аккаунт"><a href='@(Url.Action("Edit", "Manager"))'><i class="fa fa-pencil fa-lg"></i><i class="fa fa-user fa-lg"></i></a></li>
+            <li title="Выйти"><a href='@(Url.Action("Logout", "Account"))'><i class="fa fa-sign-out fa-lg"></i></a></li>
+        </ul>
+    </nav>
+    <div class="row">
+        <div class="container">
+            @RenderBody()
+        </div>
+    </div>
+    <script>
+        function SearchClick()
+        {
+            $("#SearchForm").submit();
+        }
+    </script>
+</body>
+</html>

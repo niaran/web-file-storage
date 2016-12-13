@@ -1,0 +1,16 @@
+﻿@model WebStorage.UI.Models.WebStorageDoc
+
+@{
+    ViewBag.Title = Model.FileName;
+    Layout = "~/Views/Shared/_LayoutEditDocFile.cshtml";
+}
+
+@using (Html.BeginForm("EditDocFile", "File", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(o => o.FileName)
+    @Html.HiddenFor(o => o.ParentId)
+    @Html.TextAreaFor(o => o.EditorContent, new { @class = "ckeditor", id = "_editor" })
+    <button name="submit" style="visibility:hidden"></button>
+}
+

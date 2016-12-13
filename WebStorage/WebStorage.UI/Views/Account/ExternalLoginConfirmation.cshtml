@@ -15,13 +15,13 @@
             Пожалуйста, введите недостающую информацию ниже и нажмите кнопку Зарегистрироваться, чтобы закончить вход в систему.
         </p>
         <div class="form-group">
-            @Html.LabelFor(m => m.Name, new { @class = "col-md-2 control-label", style = "color:white" })
+            @Html.LabelFor(m => m.Name, "Логин", new { @class = "col-md-2 control-label", style = "color:white" })
             <div class="col-md-5">
                 @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label", style = "color:white" })
+            @Html.LabelFor(m => m.Email, "Е-мейл", new { @class = "col-md-2 control-label", style = "color:white" })
             <div class="col-md-5">
                 @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
             </div>

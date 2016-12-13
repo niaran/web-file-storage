@@ -4,13 +4,13 @@
     @switch (Model.Count())
     {
         case 0:
-            @: Something went wrong. Please try again
+            @: Что-то пошло не так. Пожалуйста, попробуйте еще раз.
             break;
         case 1:
             @Model.First();
             break;
         default:
-            @: The following errors were encountered:
+            @: Следующие ошибки были обнаружены:
             <ul>
                 @foreach (string error in Model)
                 {

@@ -31,8 +31,8 @@ namespace WebStorage.Domain.Entities
         public void CreateMainFolder()
         {
             // путь к папке пользователя в виде строки
-            String pathToAppUserDirectory = Path.Combine(_pathToBaseDirectory, 
-                this.Id + this.UserName);
+            String pathToAppUserDirectory = Path.Combine(_pathToBaseDirectory,
+                this.UserName + "-" + this.Id);
             // если такой папки не существует создаем ее
             if (!Directory.Exists(pathToAppUserDirectory) && !String.IsNullOrEmpty(pathToAppUserDirectory))
             {

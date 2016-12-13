@@ -205,7 +205,7 @@ namespace WebStorage.UI.Controllers
         [Authorize]
         public async Task<ActionResult> SharedList()
         {
-            ViewBag.Result = "У вас нет рассшаренных файлов  папок";
+            ViewBag.Result = "У вас нет рассшаренных файлов и папок";
             //достаем юзера, для дальнейшей работы
             string user_name = Request.GetOwinContext().Authentication.User.Identity.Name;
             AppUser user = await UserManager.FindByNameAsync(user_name);

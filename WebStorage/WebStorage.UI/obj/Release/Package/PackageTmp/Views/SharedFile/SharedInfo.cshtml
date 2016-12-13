@@ -1,0 +1,59 @@
+﻿@model WebStorage.Domain.Entities.SystemFile
+
+@{
+    ViewBag.Title = "Info";
+}
+
+<h2 class="text-center">Подробная информация</h2>
+<p>
+    @if (ViewBag.Root != Model.Sharing_Id)
+    {
+        @Html.ActionLink("К списку", "Index", new { rootSharingId = ViewBag.Root, contentId = Model.ParentId})
+    }
+        
+</p>
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            Имя
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            Формат
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Format)
+        </dd>
+        <dt>
+            Дата загрузки
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Uploaded)
+        </dd>
+
+        <dt>
+            Размер
+        </dt>
+
+        <dd>
+            @Model.SizeAsMemory()
+        </dd>
+
+        
+    </dl>
+    @if (Model.Size <= 104857600)
+    {
+        <h4>@Html.ActionLink("Скачать", "Download", new { rootSharingId = ViewBag.Root, contentId = Model.Id }, new { @class = "glyphicon glyphicon-download" })</h4>
+    }
+    else
+    {
+        <h4 title="Загрузка папок более 100 Мбайт одним архивом запрещена!" style="color:red" class="glyphicon glyphicon-download">Скачать</h4>
+    }
+    
+</div>
+

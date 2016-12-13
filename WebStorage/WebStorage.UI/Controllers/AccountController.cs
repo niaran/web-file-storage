@@ -85,8 +85,8 @@ namespace WebStorage.UI.Controllers
 
                 if (_user == null)
                 {
-                    TempData["loginmessage"] = "Maybe you dont have web storagr account. Please, create it.";
-                    ModelState.AddModelError("", "Invalid name or password.");
+                    TempData["loginmessage"] = "Может быть, у вас нет акаунта в Веб-хранилище. Пожалуйста, создайте его.";
+                    ModelState.AddModelError("", "Неверный логин или пароль.");
                 }
                 else
                 {
@@ -95,7 +95,7 @@ namespace WebStorage.UI.Controllers
                     {
                         return RedirectToAction("Index", "File");
                     }
-                    ModelState.AddModelError("", "You dont have access.");
+                    ModelState.AddModelError("", "Вы не имеете доступа.");
                 }                
             }
             return View(details);

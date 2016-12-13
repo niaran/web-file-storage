@@ -1,0 +1,45 @@
+﻿@model WebStorage.Domain.Entities.SystemFile
+
+<div class="file" 
+     @if (!Model.IsFile) {
+
+             <text>onclick="window.location.href = '@Url.Action("Index", "File", new { folderId = Model.Id })'"</text>
+     }>
+
+    @{
+        string imgPath = "";
+        if (Model.IsFile)
+        {
+            imgPath = "/Content/FileImg/" + Model.Format + ".jpg";
+            if (!File.Exists(Server.MapPath("~"+imgPath)))
+            {
+                imgPath = "/Content/FileImg/default.png";
+            }
+        }
+        else
+        {
+            imgPath = "/Content/FileImg/folder.png";
+        }
+
+
+        <div style="float:left">
+            <img width="75" height="75" src="@imgPath" />
+        </div>
+    }
+
+    <h3>@Model.Name@if (Model.IsFile) {<text>.@Model.Format</text>}</h3>
+    <div style=" clear:both"></div>
+    <p>Uploaded:@Model.Uploaded by @Model.Owner.UserName</p>
+    <p>Size:@Model.SizeAsMemory() </ p >
+        <div id="custom-menu">
+            <ol>
+                <li>
+                    @Html.ActionLink("Скачать", "Download", new { Id = Model.Id })
+                </li>
+                <li class="list-divider"><hr /></li>
+                <li>
+                    @Html.ActionLink("Удалить", "Delete", new { id = Model.Id})
+                </li>
+            </ol>
+        </div>
+</div>

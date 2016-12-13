@@ -1,0 +1,41 @@
+﻿@model WebStorage.UI.Models.ExternalLoginViewModel
+
+@{
+    ViewBag.Title = "ExternalLoginConfirmation";
+    Layout = "~/Views/Shared/_LayoutAccount.cshtml";
+}
+
+<div class="logform">
+    @using (Html.BeginForm("ExternalLoginConfirmation", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <p class="text-info" style="color:white; text-align:center;width:500px;">
+            Вы успешно авторизовались с помощью <strong style="color:coral">@ViewBag.LoginProvider</strong>.
+            Пожалуйста, введите недостающую информацию ниже и нажмите кнопку Зарегистрироваться, чтобы закончить вход в систему.
+        </p>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Name, "Логин", new { @class = "col-md-2 control-label", style = "color:white" })
+            <div class="col-md-5">
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Email, "Е-мейл", new { @class = "col-md-2 control-label", style = "color:white" })
+            <div class="col-md-5">
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" class="btn btn-info" value="Зарегистрироваться" />
+            </div>
+        </div>
+    }
+</div>
+
+    
+
+
+
+

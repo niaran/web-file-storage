@@ -16,6 +16,8 @@ using System.Web;
 using WebStorage.UI.Models;
 using System.Web.Mvc;
 using System.IO;
+using reCaptcha;
+using System.Configuration;
 
 namespace WebStorage.UI.Controllers
 {
@@ -47,6 +49,8 @@ namespace WebStorage.UI.Controllers
         [AllowAnonymous]
         public ActionResult Create()
         {
+            ViewBag.Recaptcha = ReCaptcha.GetHtml(ConfigurationManager.AppSettings["ReCaptcha:SiteKey"]);
+            ViewBag.publicKey = ConfigurationManager.AppSettings["ReCaptcha:SiteKey"];
             return View();
         }
 
@@ -59,7 +63,7 @@ namespace WebStorage.UI.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> Create(UserViewModel user)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && ReCaptcha.Validate(ConfigurationManager.AppSettings["ReCaptcha:SecretKey"]))
             {
                 // создаем переменную типа AppUser
                 AppUser _user = new AppUser() { UserName = user.Name, Email = user.Email };
@@ -78,6 +82,9 @@ namespace WebStorage.UI.Controllers
                     AddErrors(_result);
                 }
             }
+
+            ViewBag.RecaptchaLastErrors = ReCaptcha.GetLastErrors(this.HttpContext);
+            ViewBag.publicKey = ConfigurationManager.AppSettings["ReCaptcha:SiteKey"];
             return View(user);
         }
         #endregion
