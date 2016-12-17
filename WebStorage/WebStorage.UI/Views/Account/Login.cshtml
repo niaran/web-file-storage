@@ -8,10 +8,10 @@
 @{
     Dictionary<String, String> templForBtn = new Dictionary<string, string>()
     {
-        ["github"] = "facebook",
-        ["facebook"] = "github",
-        ["microsoft"] = "windows",
-        ["vk"] = "vk"
+        ["github"] = "github",
+        ["facebook"] = "facebook",
+        ["microsoft"] = "microsoft",
+        ["vkontakte"] = "vk"
     };
 }
 @if (TempData["loginmessage"] != null)
@@ -19,69 +19,81 @@
     <div class="alert alert-info">@TempData["loginmessage"]</div>
 }
 
-<div class="logform">
-
-    @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-    {
-        @Html.AntiForgeryToken()
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(m => m.Name, "Логин", new { @class = "control-label col-md-3", style = "color:white" })
-            <div class="col-md-3">
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Пожалуйста, введите Ваш логин" })
-                    @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(m => m.Password, "Пароль", new { @class = "control-label col-md-3", style = "color:white" })
-            <div class="col-md-3">
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Пожалуйста, введите Ваш пароль" })
-                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-3 col-md-offset-3">
-                @Html.CheckBoxFor(m => m.remember, new { @class = "checkbox-inline" })
-                @Html.LabelFor(m => m.remember, "Запомнить", new { style = "color:white" })
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-3 col-md-offset-3">
-                <input type="submit" value="Войти" class="btn btn-success" />
-                @{
-                    var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
-                    foreach (var p in loginProviders)
-                    {
-                        <div class="form-container">
-                            @using (Html.BeginForm("ExtLogin", "Account"))
-                            {
-                                string templ = p.AuthenticationType.ToLowerInvariant();
-                                if (templForBtn.ContainsKey(templ))
-                                {
-                                    @Html.AntiForgeryToken()
-                                    <button class="btn btn-social-icon btn-@templ"
-                                            type="submit" name="provider" value="@p.AuthenticationType">
-                                        <span class="fa fa-@templForBtn[templ]" />
-                                    </button>
-                                }
-                            }
-                        </div>
-                    }
-                }
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-3 col-md-offset-3">
-                @Html.Label("Еще нет акаунта?", new { style = "color:white" })
-                @Html.ActionLink("Регистрация", "Create", "Manager", new { style = "color:orange" })
-            </div>
-        </div>
-    }
+<div class="form-group">
+    <div class="col-md-3">
+        <div class="h1" style="color:white">Вход в Веб-хранилище</div>
+    </div>
 </div>
+    <div class="logform">
+
+        @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(m => m.Name, "Логин", new { @class = "control-label col-md-3", style = "color:white" })
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Пожалуйста, введите Ваш логин" })
+                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Password, "Пароль", new { @class = "control-label col-md-3", style = "color:white" })
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Пожалуйста, введите Ваш пароль" })
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-3 col-md-offset-3">
+                    @Html.CheckBoxFor(m => m.remember, new { @class = "checkbox-inline" })
+                    @Html.LabelFor(m => m.remember, "Запомнить", new { style = "color:white" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-3 col-md-offset-3">
+                    <input type="submit" value="Войти" class="btn btn-success" />
+                </div>
+                <div class="col-md-offset-1">
+                    @{
+                        var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+                        foreach (var p in loginProviders)
+                        {
+                            <div class="form-container">
+                                @using (Html.BeginForm("ExtLogin", "Account"))
+                                {
+                                    string templ = p.AuthenticationType.ToLowerInvariant();
+                                    if (templForBtn.ContainsKey(templ))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <button class="btn btn-social-icon btn-@templForBtn[templ]"
+                                                type="submit" name="provider" value="@p.AuthenticationType">
+                                            @{
+                                                if (templForBtn[templ] == "microsoft")
+                                                { templForBtn[templ] = "windows"; }
+
+                                            }
+                                            <span class="fa fa-@templForBtn[templ]" />
+                                        </button>
+                                                    }
+                                                }
+                            </div>
+                                                }
+                    }
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-3 col-md-offset-3">
+                    @Html.Label("Еще нет акаунта?", new { style = "color:white" })
+                    <ins>@Html.ActionLink("Регистрация", "Create", "Manager", new { style = "color:orange" })</ins>
+                </div>
+            </div>
+                                                }
+    </div>
