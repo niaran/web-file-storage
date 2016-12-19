@@ -36,7 +36,6 @@ namespace WebStorage.UI
                     LoginPath = new PathString("/Account/Login")
                 }
                 );
-
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
             //https://developers.facebook.com/apps/
@@ -52,7 +51,7 @@ namespace WebStorage.UI
             app.UseMicrosoftAccountAuthentication("59359d74-e18f-4a5c-b21a-6f4d7753d392", "rB0ZE3CcxUyYosUrtPYFUTH");
 
             //https://vk.com/apps?act=manage
-            //https://localhost:44349/signin-vk
+            //https://localhost:44349/signin-vkontakte
             app.UseVkontakteAuthentication("5775688", "RY21KkaQXtgWJPcTjPJ9");
         }
     }   

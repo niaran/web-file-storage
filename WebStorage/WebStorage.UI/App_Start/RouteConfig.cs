@@ -32,8 +32,6 @@ namespace WebStorage.UI
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "File", action = "Index", id = UrlParameter.Optional }
             );
-
-
         }
     }
 }

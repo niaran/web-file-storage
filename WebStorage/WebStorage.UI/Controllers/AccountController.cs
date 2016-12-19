@@ -63,6 +63,7 @@ namespace WebStorage.UI.Controllers
         /// Login /Get/
         /// </summary>
         /// <returns></returns>
+        [HttpGet]
         [AllowAnonymous]
         public ActionResult Login()
         {
@@ -168,6 +169,7 @@ namespace WebStorage.UI.Controllers
                 {
                     return RedirectToAction("Login");
                 }
+
                 AppUser user = new AppUser { UserName = model.Name, Email = model.Email };
                 IdentityResult result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)

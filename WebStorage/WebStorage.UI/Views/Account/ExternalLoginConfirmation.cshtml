@@ -1,41 +1,46 @@
 ﻿@model WebStorage.UI.Models.ExternalLoginViewModel
 
 @{
-    ViewBag.Title = "ExternalLoginConfirmation";
+    ViewBag.Title = "Подтверждение входа";
     Layout = "~/Views/Shared/_LayoutAccount.cshtml";
 }
 
 <div class="logform">
+    <h2>Подтверждение входа</h2>
+    <div class="text-info" style="color:white;text-align:center;">
+        Вы успешно авторизовались с помощью <strong>@ViewBag.LoginProvider</strong>.<br />
+        Пожалуйста, введите недостающую информацию ниже и<br /> нажмите кнопку <ins style="color:red">Зарегистрироваться</ins>, чтобы закончить вход в систему.
+    </div>
+    <label></label>
     @using (Html.BeginForm("ExternalLoginConfirmation", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
     {
         @Html.AntiForgeryToken()
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <p class="text-info" style="color:white; text-align:center;width:500px;">
-            Вы успешно авторизовались с помощью <strong style="color:coral">@ViewBag.LoginProvider</strong>.
-            Пожалуйста, введите недостающую информацию ниже и нажмите кнопку Зарегистрироваться, чтобы закончить вход в систему.
-        </p>
         <div class="form-group">
-            @Html.LabelFor(m => m.Name, "Логин", new { @class = "col-md-2 control-label", style = "color:white" })
-            <div class="col-md-5">
-                @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+            @Html.LabelFor(m => m.Name, "Логин", new { @class = "col-md-4 control-label" })
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Пожалуйста, введите Ваш логин" })
+                    @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                </div>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(m => m.Email, "Е-мейл", new { @class = "col-md-2 control-label", style = "color:white" })
-            <div class="col-md-5">
-                @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+            @Html.LabelFor(m => m.Email, "Е-мейл", new { @class = "col-md-4 control-label" })
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Пожалуйста, введите Ваш Е-мейл" })
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                </div>
             </div>
         </div>
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" class="btn btn-info" value="Зарегистрироваться" />
+            <div class="col-md-4 col-md-offset-4">
+                <input type="submit" class="btn btn-danger" value="Зарегистрироваться" />
+                @Html.ActionLink("Отмена", "Index", "File", null, new { @class = "btn btn-default" })
             </div>
         </div>
     }
 </div>
-
-    
-
-
-
-
