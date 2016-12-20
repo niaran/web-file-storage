@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace WebStorage.UI.Models
 {
     public class ExternalLoginViewModel
     {
-        [Required]
-        [DisplayName ("Email")]
-        public String Email { get; set; }
+        [Display(Name = "Е-мейл")]
+        [EmailAddress(ErrorMessage = "Неверный Е-мейл.")]
+        public string Email { get; set; }
 
-        [Required]
-        [DisplayName("Name")]
-        public String Name { get; set; }
+        [Display(Name = "Логин")]
+        [Required(ErrorMessage = "Введите Логин.")]
+        [StringLength(20, MinimumLength = 3, ErrorMessage = "Длина Логина должна быть от 3 до 20 символов.")]
+        public string Name { get; set; }
     }
 }

@@ -5,40 +5,75 @@
     Layout = "~/Views/Shared/_LayoutAccount.cshtml";
 }
 
-<div class="logform" style="color:white;">
-    @Html.ValidationSummary()
+@if (TempData["loginmessage"] != null)
+{
+    <div class="alert alert-info">@TempData["loginmessage"]</div>
+}
+
+<div class="logform">
+    <h2>Регистрация</h2>
     @using (Html.BeginForm("Create", "Manager", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
     {
         <div class="form-group">
-            @Html.LabelFor(m => m.Name, "Логин", new { @class = "col-md-2 control-label", style = "color:white" })
+            @Html.LabelFor(m => m.Name, new { @class = "col-md-4 control-label" })
             <div class="col-md-4">
-                @Html.TextBoxFor(x => x.Name, new { @class = "form-control", placeholder = "Пожалуйста, введите логин:" })
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                    @Html.TextBoxFor(x => x.Name, new { @class = "form-control", placeholder = "Пожалуйста, введите Логин:" })
+                </div>
+                <strong style="color:red">
+                    @Html.ValidationMessageFor(m => m.Name, "", new { @class = "col-md-offset-1" })
+                </strong>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(m => m.Email, "Е-мейл", new { @class = "col-md-2 control-label", style = "color:white" })
+            @Html.LabelFor(m => m.Email, new { @class = "col-md-4 control-label" })
             <div class="col-md-4">
-                @Html.TextBoxFor(x => x.Email, new { @class = "form-control", placeholder = "Пожалуйста, введите е-мейл:" })
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Пожалуйста, введите Е-мейл" })
+                </div>
+                <strong style="color:red">
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "col-md-offset-1" })
+                </strong>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(m => m.Password, "Пароль", new { @class = "col-md-2 control-label", style = "color:white" })
+            @Html.LabelFor(m => m.Password, new { @class = "col-md-4 control-label" })
             <div class="col-md-4">
-                @Html.TextBoxFor(x => x.Password, new { @class = "form-control", placeholder = "Пожалуйста, введите пароль:" })
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                    @Html.PasswordFor(x => x.Password, new { @class = "form-control", placeholder = "Пожалуйста, введите Пароль:" })
+                </div>
+                <strong style="color:red">
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "col-md-offset-1" })
+                </strong>
             </div>
         </div>
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
+            @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-4 control-label" })
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                    @Html.PasswordFor(x => x.ConfirmPassword, new { @class = "form-control", placeholder = "Пожалуйста, введите Подтверждение пароля:" })
+                </div>
+                <strong style="color:red">
+                    @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "col-md-offset-1" })
+                </strong>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-5 col-md-offset-4">
                 @ViewBag.ReCaptcha
                 @if (ViewBag.RecaptchaLastErrors != null)
                 {
-                    <div>Oops! Invalid reCAPTCHA =(</div>
+                    <div>Недопустимая reCAPTCHA</div>
                 }
             </div>
         </div>
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+            <div class="col-md-5 col-md-offset-4">
+                <button type="submit" class="btn btn-danger">Зарегистрироваться</button>
                 @Html.ActionLink("Отмена", "Login", "Account", null, new { @class = "btn btn-default" })
             </div>
         </div>

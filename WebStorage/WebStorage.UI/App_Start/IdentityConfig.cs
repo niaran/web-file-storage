@@ -41,11 +41,7 @@ namespace WebStorage.UI
             //https://developers.facebook.com/apps/
             //https://localhost:44349/signin-facebook
             app.UseFacebookAuthentication("195976144194610","7c91f8bfd89f0b1bf3e0cf2e0dfa69fb");
-
-            //https://github.com/settings/developers
-            //https://localhost:44349/signin-github
-            app.UseGithubAuthentication("8ab02bf3204e39faacdc", "e96c920a1130d8d9b9708e4d8adf06ca0898ab13");
-
+            
             //https://apps.dev.microsoft.com/#/appList
             //https://localhost:44349/signin-microsoft
             app.UseMicrosoftAccountAuthentication("59359d74-e18f-4a5c-b21a-6f4d7753d392", "rB0ZE3CcxUyYosUrtPYFUTH");
@@ -53,6 +49,12 @@ namespace WebStorage.UI
             //https://vk.com/apps?act=manage
             //https://localhost:44349/signin-vkontakte
             app.UseVkontakteAuthentication("5775688", "RY21KkaQXtgWJPcTjPJ9");
+
+            //https://github.com/settings/developers
+            //https://localhost:44349/signin-github
+            app.UseGithubAuthentication("8ab02bf3204e39faacdc", "e96c920a1130d8d9b9708e4d8adf06ca0898ab13");
+
+            app.UseTwitterAuthentication("123", "321");
         }
     }   
 }

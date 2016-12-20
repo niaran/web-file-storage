@@ -86,8 +86,7 @@ namespace WebStorage.UI.Controllers
 
                 if (_user == null)
                 {
-                    TempData["loginmessage"] = "Может быть, у вас нет акаунта в Веб-хранилище. Пожалуйста, создайте его.";
-                    ModelState.AddModelError("", "Неверный логин или пароль.");
+                    TempData["loginmessage"] = "Неверный логин или пароль. Может быть, у вас нет акаунта в Веб-хранилище. Пожалуйста, создайте его.";
                 }
                 else
                 {
@@ -96,7 +95,7 @@ namespace WebStorage.UI.Controllers
                     {
                         return RedirectToAction("Index", "File");
                     }
-                    ModelState.AddModelError("", "Вы не имеете доступа.");
+                    TempData["loginmessage"] = "Вы не имеете доступа.";
                 }                
             }
             return View(details);

@@ -8,10 +8,10 @@
 @{
     Dictionary<String, String> templForBtn = new Dictionary<string, string>()
     {
+        ["vkontakte"] = "vk",
         ["github"] = "github",
         ["facebook"] = "facebook",
-        ["microsoft"] = "microsoft",
-        ["vkontakte"] = "vk"
+        ["microsoft"] = "microsoft"
     };
 }
 @if (TempData["loginmessage"] != null)
@@ -24,25 +24,28 @@
     @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
     {
         @Html.AntiForgeryToken()
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
-            @Html.LabelFor(m => m.Name, "Логин", new { @class = "control-label col-md-4" })
+            @Html.LabelFor(m => m.Name, new { @class = "control-label col-md-4" })
             <div class="col-md-4">
                 <div class="input-group">
                     <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
                     @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Пожалуйста, введите Ваш логин" })
-                    @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
                 </div>
+                <strong style="color:red">
+                    @Html.ValidationMessageFor(m => m.Name, "", new { @class = "col-md-offset-1" })
+                </strong>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(m => m.Password, "Пароль", new { @class = "control-label col-md-4" })
+            @Html.LabelFor(m => m.Password, new { @class = "control-label col-md-4" })
             <div class="col-md-4">
                 <div class="input-group">
                     <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
                     @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Пожалуйста, введите Ваш пароль" })
-                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                 </div>
+                <strong style="color:red">
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "col-md-offset-1" })
+                </strong>
             </div>
         </div>
         <div class="form-group">
@@ -65,31 +68,31 @@
         <div class="form-group">
             <div class="col-md-4 col-md-offset-4">
             @Html.Label("Или войдите с помощью")
-                @{
-                    var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
-                    foreach (var p in loginProviders)
-                    {
-                        <div class="form-container">
-                            @using (Html.BeginForm("ExtLogin", "Account"))
+            @{
+                var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+                foreach (var p in loginProviders)
+                {
+                    <div class="form-container">
+                        @using (Html.BeginForm("ExtLogin", "Account"))
+                        { 
+                            string templ = p.AuthenticationType.ToLowerInvariant();
+                            if (templForBtn.ContainsKey(templ))
                             {
-                                string templ = p.AuthenticationType.ToLowerInvariant();
-                                if (templForBtn.ContainsKey(templ))
-                                {
-                                    @Html.AntiForgeryToken()
-                                    <button class="btn btn-social-icon btn-@templForBtn[templ]"
-                                            type="submit" name="provider" value="@p.AuthenticationType">
-                                        @{
-                                            if (templForBtn[templ] == "microsoft")
-                                            { templForBtn[templ] = "windows"; }
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-social-icon btn-@templForBtn[templ]"
+                                        type="submit" name="provider" value="@p.AuthenticationType">
+                                    @{
+                                        if (templForBtn[templ] == "microsoft")
+                                        { templForBtn[templ] = "windows"; }
 
-                                        }
-                                        <span class="fa fa-@templForBtn[templ]" />
-                                    </button>
-                                }
+                                    }
+                                    <span class="fa fa-@templForBtn[templ]" />
+                                </button>
                             }
-                        </div>
-                    }
+                        }
+                    </div>
                 }
+            }
             </div>
         </div>
     }

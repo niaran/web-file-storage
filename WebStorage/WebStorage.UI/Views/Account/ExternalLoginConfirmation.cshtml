@@ -15,25 +15,28 @@
     @using (Html.BeginForm("ExternalLoginConfirmation", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
     {
         @Html.AntiForgeryToken()
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
-            @Html.LabelFor(m => m.Name, "Логин", new { @class = "col-md-4 control-label" })
+            @Html.LabelFor(m => m.Name, new { @class = "control-label col-md-4" })
             <div class="col-md-4">
                 <div class="input-group">
                     <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
                     @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Пожалуйста, введите Ваш логин" })
-                    @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
                 </div>
+                <strong style="color:red">
+                    @Html.ValidationMessageFor(m => m.Name, "", new { @class = "col-md-offset-1" })
+                </strong>
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(m => m.Email, "Е-мейл", new { @class = "col-md-4 control-label" })
+            @Html.LabelFor(m => m.Email, new { @class = "control-label col-md-4" })
             <div class="col-md-4">
                 <div class="input-group">
                     <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
                     @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Пожалуйста, введите Ваш Е-мейл" })
-                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
                 </div>
+                <strong style="color:red">
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "col-md-offset-1" })
+                </strong>
             </div>
         </div>
         <div class="form-group">

@@ -58,7 +58,7 @@ namespace WebStorage.Domain.Entities
         public string SizeAsMemory()
         {
             const int scale = 1024;
-            string[] orders = new string[] { "GB", "MB", "KB", "Bytes" };
+            string[] orders = new string[] { "ГБ", "МБ", "КБ", "Байт" };
             long max = (long)Math.Pow(scale, orders.Length - 1);
 
             foreach (string order in orders)
@@ -68,7 +68,7 @@ namespace WebStorage.Domain.Entities
 
                 max /= scale;
             }
-            return "0 Bytes";
+            return "0 Байт";
         }
     }
 

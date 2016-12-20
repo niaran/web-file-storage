@@ -83,7 +83,12 @@ namespace WebStorage.UI.Controllers
                 }
             }
 
-            ViewBag.RecaptchaLastErrors = ReCaptcha.GetLastErrors(this.HttpContext);
+            var captchaLastErrors = ReCaptcha.GetLastErrors(this.HttpContext);
+            if (captchaLastErrors == null)
+                ViewBag.Recaptcha = ReCaptcha.GetHtml(ConfigurationManager.AppSettings["ReCaptcha:SiteKey"]);
+            else
+                ViewBag.RecaptchaLastErrors = captchaLastErrors;
+
             ViewBag.publicKey = ConfigurationManager.AppSettings["ReCaptcha:SiteKey"];
             return View(user);
         }
@@ -216,10 +221,12 @@ namespace WebStorage.UI.Controllers
         /// <param name="result"></param>
         private void AddErrors(IdentityResult result)
         {
-            foreach (var error in result.Errors)
+            string error = string.Empty;
+            foreach (var err in result.Errors)
             {
-                ModelState.AddModelError("", error);
+                error = error + ". " + err;
             }
+            TempData["loginmessage"] = error;
         }
     }
 }
